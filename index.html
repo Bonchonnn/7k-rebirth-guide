@@ -26,12 +26,22 @@
                 <input type="text" id="searchInput" class="form-control bg-dark text-light border-secondary shadow-none" placeholder="🔍 ค้นหาชื่อตัวละคร...">
             </div>
             <div class="col-md-5">
-                <select id="elementFilter" class="form-select bg-dark text-light border-secondary shadow-none">
-                    <option value="All">ทุกธาตุ (All Elements)</option>
-                    <option value="Light">Light (แสง)</option>
-                    <option value="Fire">Fire (ไฟ)</option>
-                    <option value="Dark">Dark (มืด)</option>
-                </select>
+               <section class="mb-4 text-center">
+    <div class="row g-2 align-items-center mb-3">
+        <div class="col-md-6">
+            <input type="text" id="searchInput" class="form-control bg-dark text-light border-secondary shadow-none" placeholder="🔍 ค้นหาชื่อตัวละคร...">
+        </div>
+        <div class="col-md-6 text-md-end">
+            <!-- กลุ่มปุ่มกดเลือกธาตุ -->
+            <div class="btn-group flex-wrap" role="group" id="elementFilterGroup">
+                <button type="button" class="btn btn-outline-warning active" data-element="All">ทั้งหมด</button>
+                <button type="button" class="btn btn-outline-warning" data-element="Light">Light (แสง)</button>
+                <button type="button" class="btn btn-outline-danger" data-element="Fire">Fire (ไฟ)</button>
+                <button type="button" class="btn btn-outline-purple" data-element="Dark">Dark (มืด)</button>
+            </div>
+        </div>
+    </div>
+</section>
             </div>
         </section>
 
