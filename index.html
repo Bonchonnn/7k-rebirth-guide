@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seven Knights Rebirth - Guide & Wiki</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <h1>Seven Knights Rebirth Guide</h1>
+        <p>คลังข้อมูลตัวละครและไกด์เกม</p>
+    </header>
+
+    <main class="container">
+        <!-- แถบการค้นหาและตัวกรอง -->
+        <section class="controls">
+            <input type="text" id="searchInput" placeholder="ค้นหาชื่อตัวละคร...">
+            
+            <select id="elementFilter">
+                <option value="All">ทุกธาตุ</option>
+                <option value="Light">Light (แสง)</option>
+                <option value="Fire">Fire (ไฟ)</option>
+                <option value="Dark">Dark (มืด)</option>
+            </select>
+        </section>
+
+        <!-- แสดงการ์ดตัวละคร -->
+        <section id="heroGrid" class="hero-grid">
+            <!-- ข้อมูลจะถูกโหลดมาจาก app.js -->
+        </section>
+    </main>
+
+    <!-- Modal สำหรับแสดงรายละเอียดสกิลแบบ Pop-up -->
+    <div id="heroModal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="heroesData.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
