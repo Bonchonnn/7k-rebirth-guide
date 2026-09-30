@@ -2,33 +2,47 @@
 const heroGrid = document.getElementById('heroGrid');
 const searchInput = document.getElementById('searchInput');
 const elementFilter = document.getElementById('elementFilter');
-const modal = document.getElementById('heroModal');
-const modalBody = document.getElementById('modalBody');
-const closeBtn = document.querySelector('.close-btn');
+
+// เรียกใช้ Modal Controller ของ Bootstrap 5
+const heroModalElement = document.getElementById('heroModal');
+const bsModal = new bootstrap.Modal(heroModalElement);
 
 // ฟังก์ชันสร้างการ์ดแสดงผลตัวละคร
 function renderHeroes(heroes) {
     heroGrid.innerHTML = '';
     
     if (heroes.length === 0) {
-        heroGrid.innerHTML = '<p style="grid-column: 1/-1; text-align: center;">ไม่พบข้อมูลตัวละคร</p>';
+        heroGrid.innerHTML = `
+            <div class="col-12 text-center text-muted py-5">
+                <h4>ไม่พบข้อมูลตัวละครที่ค้นหา</h4>
+            </div>`;
         return;
     }
 
     heroes.forEach(hero => {
-        const card = document.createElement('div');
-        card.className = 'hero-card';
-        card.onclick = () => openModal(hero);
+        const col = document.createElement('div');
+        col.className = 'col';
+        col.onclick = () => openModal(hero);
 
-        card.innerHTML = `
-            <img src="${hero.image}" alt="${hero.name}">
-            <h3>${hero.name}</h3>
-            <div>
-                <span class="badge">${hero.element}</span>
-                <span class="badge">${hero.role}</span>
+        // เลือกสี Badge ตามประเภทธาตุ
+        let elementBadgeColor = 'bg-secondary';
+        if (hero.element === 'Light') elementBadgeColor = 'bg-warning text-dark';
+        if (hero.element === 'Fire') elementBadgeColor = 'bg-danger';
+        if (hero.element === 'Dark') elementBadgeColor = 'bg-dark border border-light';
+
+        col.innerHTML = `
+            <div class="card bg-secondary bg-gradient text-light h-100 border-0 shadow-sm hero-card">
+                <img src="${hero.image}" class="card-img-top p-2 rounded" alt="${hero.name}">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-warning fw-bold mb-2">${hero.name}</h5>
+                    <div class="d-flex justify-content-center gap-1">
+                        <span class="badge ${elementBadgeColor}">${hero.element}</span>
+                        <span class="badge bg-info text-dark">${hero.role}</span>
+                    </div>
+                </div>
             </div>
         `;
-        heroGrid.appendChild(card);
+        heroGrid.appendChild(col);
     });
 }
 
@@ -46,30 +60,36 @@ function filterHeroes() {
     renderHeroes(filtered);
 }
 
-// ฟังก์ชันเปิด Modal แสดงรายละเอียด
+// ฟังก์ชันเปิด Modal แสดงรายละเอียดตัวละครและสกิล
 function openModal(hero) {
+    document.getElementById('modalHeroName').innerText = hero.name;
+
     let skillsHTML = hero.skills.map(skill => `
-        <div style="margin-top: 0.8rem; background: #1f1f1f; padding: 0.5rem; border-radius: 4px;">
-            <strong style="color: #ffd700;">[${skill.type}] ${skill.name}</strong>
-            <p style="margin: 0.3rem 0 0 0; font-size: 0.9rem;">${skill.desc}</p>
+        <div class="p-3 mb-2 skill-box rounded">
+            <div class="d-flex justify-content-between align-items-center mb-1">
+                <strong class="text-warning">${skill.name}</strong>
+                <span class="badge bg-outline-light border">${skill.type}</span>
+            </div>
+            <p class="m-0 small text-light-50">${skill.desc}</p>
         </div>
     `).join('');
 
-    modalBody.innerHTML = `
-        <h2 style="color: #ffd700; margin-top: 0;">${hero.name}</h2>
-        <p><strong>ธาตุ:</strong> ${hero.element} | <strong>สาย:</strong> ${hero.role}</p>
-        <p>${hero.description}</p>
-        <h3>สกิลตัวละคร</h3>
+    document.getElementById('modalBody').innerHTML = `
+        <div class="text-center mb-3">
+            <img src="${hero.image}" class="img-fluid rounded border border-warning" style="max-height: 180px;">
+        </div>
+        <p class="mb-1"><strong>ธาตุ:</strong> ${hero.element} | <strong>สาย:</strong> ${hero.role}</p>
+        <p class="small text-light-50 mb-3">${hero.description}</p>
+        <h6 class="text-info fw-bold mb-2">รายละเอียดสกิล</h6>
         ${skillsHTML}
     `;
-    modal.style.display = 'flex';
+
+    bsModal.show(); // เปิด Pop-up Modal ของ Bootstrap
 }
 
-// Event Listeners
+// Event Listeners สำหรับระบบค้นหา
 searchInput.addEventListener('input', filterHeroes);
 elementFilter.addEventListener('change', filterHeroes);
-closeBtn.onclick = () => modal.style.display = 'none';
-window.onclick = (e) => { if (e.target === modal) modal.style.display = 'none'; };
 
-// โหลดข้อมูลครั้งแรกเมื่อเปิดหน้าเว็บ
+// แสดงผลครั้งแรกเมื่อเปิดเว็บ
 renderHeroes(heroesData);
