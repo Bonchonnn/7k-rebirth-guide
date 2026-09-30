@@ -1,13 +1,16 @@
-// ดึง HTML Elements
+// 1. ดึง HTML Elements
 const heroGrid = document.getElementById('heroGrid');
 const searchInput = document.getElementById('searchInput');
-const elementFilter = document.getElementById('elementFilter');
+const filterButtons = document.querySelectorAll('#elementFilterGroup .btn');
+
+// ตัวแปรเก็บบันทึกธาตุที่เลือกปัจจุบัน
+let currentSelectedElement = 'All';
 
 // เรียกใช้ Modal Controller ของ Bootstrap 5
 const heroModalElement = document.getElementById('heroModal');
 const bsModal = new bootstrap.Modal(heroModalElement);
 
-// ฟังก์ชันสร้างการ์ดแสดงผลตัวละคร
+// 2. ฟังก์ชันสร้างการ์ดแสดงผลตัวละคร
 function renderHeroes(heroes) {
     heroGrid.innerHTML = '';
     
@@ -24,7 +27,6 @@ function renderHeroes(heroes) {
         col.className = 'col';
         col.onclick = () => openModal(hero);
 
-        // เลือกสี Badge ตามประเภทธาตุ
         let elementBadgeColor = 'bg-secondary';
         if (hero.element === 'Light') elementBadgeColor = 'bg-warning text-dark';
         if (hero.element === 'Fire') elementBadgeColor = 'bg-danger';
@@ -46,24 +48,24 @@ function renderHeroes(heroes) {
     });
 }
 
-// ฟังก์ชันค้นหาและกรองข้อมูล
+// 3. ฟังก์ชันค้นหาและกรองข้อมูล
 function filterHeroes() {
     const searchTerm = searchInput.value.toLowerCase();
-    const selectedElement = elementFilter.value;
 
     const filtered = heroesData.filter(hero => {
         const matchesName = hero.name.toLowerCase().includes(searchTerm);
-        const matchesElement = selectedElement === 'All' || hero.element === selectedElement;
+        const matchesElement = currentSelectedElement === 'All' || hero.element === currentSelectedElement;
         return matchesName && matchesElement;
     });
 
     renderHeroes(filtered);
 }
 
-// ฟังก์ชันเปิด Modal แสดงรายละเอียดตัวละครและสกิล
+// 4. ฟังก์ชันเปิด Modal แสดงรายละเอียดตัวละครและสกิล
 function openModal(hero) {
     document.getElementById('modalHeroName').innerText = hero.name;
 
+    // วนลูปสร้างรายการสกิล
     let skillsHTML = hero.skills.map(skill => `
         <div class="p-3 mb-2 skill-box rounded">
             <div class="d-flex justify-content-between align-items-center mb-1">
@@ -74,6 +76,7 @@ function openModal(hero) {
         </div>
     `).join('');
 
+    // เติมข้อมูลลงในตัว Modal
     document.getElementById('modalBody').innerHTML = `
         <div class="text-center mb-3">
             <img src="${hero.image}" class="img-fluid rounded border border-warning" style="max-height: 180px;">
@@ -84,12 +87,29 @@ function openModal(hero) {
         ${skillsHTML}
     `;
 
-    bsModal.show(); // เปิด Pop-up Modal ของ Bootstrap
+    // สั่งเปิด Modal ของ Bootstrap
+    bsModal.show();
 }
 
-// Event Listeners สำหรับระบบค้นหา
-searchInput.addEventListener('input', filterHeroes);
-elementFilter.addEventListener('change', filterHeroes);
+// 5. ผูก Event การคลิกที่ปุ่มเลือกธาตุ
+filterButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+        // ลบสถานะ active จากทุกปุ่ม
+        filterButtons.forEach(btn => btn.classList.remove('active'));
+        
+        // เพิ่มสถานะ active ให้ปุ่มที่ถูกคลิก
+        e.target.classList.add('active');
+        
+        // อัปเดตธาตุที่เลือก
+        currentSelectedElement = e.target.getAttribute('data-element');
+        
+        // กรองการ์ดใหม่
+        filterHeroes();
+    });
+});
 
-// แสดงผลครั้งแรกเมื่อเปิดเว็บ
+// 6. Event Listener สำหรับช่องค้นหาชื่อ
+searchInput.addEventListener('input', filterHeroes);
+
+// 7. แสดงผลครั้งแรกเมื่อเปิดหน้าเว็บ
 renderHeroes(heroesData);
