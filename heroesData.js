@@ -5,7 +5,7 @@ const heroesData = [
         element: "Light",
         role: "Defense",
         stars: 6,
-        image: "https://via.placeholder.com/300x300/0044ff/ffffff?text=Rudy",
+        image: "https://media.discordapp.net/attachments/1237388735578902548/1416215062561030154/Screenshot_2025-06-13_215942.png?ex=6abda58e&is=6abc540e&hm=fe907399e6b42a1aacc99739591aacd2218a3b89e5a792bde6db707099fe5bad&=&format=webp&quality=lossless=Rudy",
         description: "อัศวินแห่งแสง ผู้ปกป้องความถูกต้อง มีพลังป้องกันสูงและสกิลกางโล่ให้ทีม",
         skills: [
             { name: "Shield of Light", type: "Active 1", desc: "กางโล่ลดความเสียหายที่ได้รับ 60% เป็นเวลา 2 ตา" },
