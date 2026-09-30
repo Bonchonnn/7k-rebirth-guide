@@ -18,4 +18,24 @@ body {
 .skill-box {
     background-color: #212529;
     border-left: 4px solid #ffd700;
+    
+}
+
+/* ปุ่มสีสำหรับธาตุมืด (Dark Element) */
+.btn-outline-purple {
+    color: #b066ff;
+    border-color: #b066ff;
+}
+
+.btn-outline-purple:hover,
+.btn-outline-purple.active {
+    background-color: #b066ff;
+    color: #fff;
+    border-color: #b066ff;
+}
+
+/* รักษาสภาพปุ่ม active เมื่อคลิกเลือก */
+#elementFilterGroup .btn.active {
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+    font-weight: bold;
 }
