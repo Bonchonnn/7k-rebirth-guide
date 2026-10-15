@@ -113,7 +113,7 @@
                     <h3 class="text-warning fw-bold m-0" style="text-shadow: 0 0 12px rgba(245, 158, 11, 0.6);">
                         🎯 บ้านศัตรูที่ต้องรับมือ (Guild War Targets)
                     </h3>
-                    <small class="text-light opacity-75">คลิกที่การ์ดเพื่อดูบ้านและทีมที่เราจัดไว้เข้าตี</small>
+                    <small class="text-light opacity-75">คลิกที่การ์ดเพื่อดูทีมที่เราจัดไว้เข้าตี</small>
                 </div>
                 <div class="d-flex gap-2 align-items-center">
                     <a href="guildwar.html" class="btn-dashboard">⚙️ หน้าจัดบ้าน (Dashboard)</a>
@@ -121,7 +121,7 @@
                 </div>
             </div>
 
-            <!-- Grid แสดงรายการการ์ดบ้านศัตรู 2 บ้าน -->
+            <!-- Grid แสดงรายการการ์ดบ้านศัตรู -->
             <div id="targetGridContainer" class="row g-4">
                 
                 <!-- บ้านศัตรูที่ 1 -->
@@ -211,7 +211,7 @@
         </div>
     </div>
 
-    <!-- Modal Popup แสดงทีมที่เราจัดไว้เข้าตี -->
+    <!-- Modal Popup แสดงทีมที่เราจัดไว้เข้าตี (Box ด้านใน) -->
     <div class="modal fade" id="counterTeamsModal" tabindex="-1">
         <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
             <div class="modal-content bg-dark text-light border-warning shadow-lg">
@@ -223,7 +223,7 @@
                     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body" id="modalCounterList">
-                    <!-- รายการทีมจะแสดงที่นี่เมื่อกดคลิกการ์ด -->
+                    <!-- รายการทีมรุกแก้ทางจะถูกแสดงที่นี่ -->
                 </div>
             </div>
         </div>
@@ -231,7 +231,7 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ข้อมูล 2 บ้านศัตรูและทีมแก้ของฝ่ายเรา
+        // ข้อมูลตัวอย่างบ้านศัตรู + ทีมตีแก้ทางภายใน Box
         const mockTargets = [
             {
                 id: 1,
@@ -239,22 +239,32 @@
                 formation: "หน้า 2 / หลัง 3",
                 counter_teams: [
                     {
-                        attacker: "Earth (สายระเบิดดาเมจ)",
+                        attacker: "Earth (ทีมที่ 1 - สายระเบิดดาเมจ)",
                         formation: "1-4",
                         selected_heroes: {
-                            front: [{ name: "กิยู", image: "images/Giyu&Shinobu.png", ring: { name: "แหวนสถานะ", image: "images/Giyu&Shinobu.png" }, itemDesc: "เจาะเกราะ 100%" }],
-                            back: [{ name: "ชิโนบุ", image: "images/Giyu&Shinobu.png", ring: { name: "แหวนชุบ", image: "images/favicon-7k-war.png" }, itemDesc: "คริแรง" }, { name: "ทันจิโร่", image: "images/Bg.jpg", ring: null, itemDesc: "เวทย์ตีกระจาย" }, null, null]
+                            front: [{ name: "กิยู", image: "images/Giyu&Shinobu.png", ring: { name: "แหวนสถานะ", image: "images/Giyu&Shinobu.png" }, itemDesc: "เจาะเกราะ 100% / สปีดไว" }],
+                            back: [
+                                { name: "ชิโนบุ", image: "images/Giyu&Shinobu.png", ring: { name: "แหวนชุบชีวิต", image: "images/favicon-7k-war.png" }, itemDesc: "คริติคอลแรง" },
+                                { name: "ทันจิโร่", image: "images/Bg.jpg", ring: null, itemDesc: "เวทย์ตีกระจาย" },
+                                null, null
+                            ]
                         },
                         pet: { name: "สัตว์เลี้ยง 1", image: "images/Giyu&Shinobu.png" },
                         skill_order: "1 -> 3 -> 2",
-                        note: "เปิดด้วยสกิล 1 ล้างบัฟศัตรูก่อน แล้วตามด้วยสกิล 3 ปิดฉาก"
+                        note: "เปิดสกิล 1 ล้างบัฟศัตรูก่อน แล้วตามด้วยสกิล 3 ปิดฉาก"
                     },
                     {
-                        attacker: "Friend A (ทีมสำรอง)",
+                        attacker: "Friend A (ทีมที่ 2 - สำรองแก้ทาง)",
                         formation: "2-3",
                         selected_heroes: {
-                            front: [{ name: "ทันจิโร่", image: "images/Bg.jpg", ring: null, itemDesc: "ถึกยืนนาน" }, { name: "ชิโนบุ", image: "images/Giyu&Shinobu.png", ring: null, itemDesc: "แปะพิษ" }],
-                            back: [{ name: "กิยู", image: "images/Giyu&Shinobu.png", ring: null, itemDesc: "สวนกลับ" }, null, null]
+                            front: [
+                                { name: "ทันจิโร่", image: "images/Bg.jpg", ring: null, itemDesc: "ถึกยืนนาน" },
+                                { name: "ชิโนบุ", image: "images/Giyu&Shinobu.png", ring: null, itemDesc: "แปะพิษ" }
+                            ],
+                            back: [
+                                { name: "กิยู", image: "images/Giyu&Shinobu.png", ring: null, itemDesc: "สวนกลับ" },
+                                null, null
+                            ]
                         },
                         pet: null,
                         skill_order: "2 -> 1 -> 3",
@@ -268,11 +278,17 @@
                 formation: "หน้า 1 / หลัง 4",
                 counter_teams: [
                     {
-                        attacker: "Friend B (ทีมสปีดไว)",
+                        attacker: "Friend B (ทีมสปีดไวเน้นเปิดก่อน)",
                         formation: "2-3",
                         selected_heroes: {
-                            front: [{ name: "กิยู", image: "images/Giyu&Shinobu.png", ring: { name: "แหวนสถานะ", image: "images/Giyu&Shinobu.png" }, itemDesc: "สปีดไวสุด" }, null],
-                            back: [{ name: "ชิโนบุ", image: "images/Giyu&Shinobu.png", ring: null, itemDesc: "ดาเมจหนัก" }, null, null]
+                            front: [
+                                { name: "กิยู", image: "images/Giyu&Shinobu.png", ring: { name: "แหวนสถานะ", image: "images/Giyu&Shinobu.png" }, itemDesc: "สปีดไวสุด" },
+                                null
+                            ],
+                            back: [
+                                { name: "ชิโนบุ", image: "images/Giyu&Shinobu.png", ring: null, itemDesc: "ดาเมจหนัก" },
+                                null, null
+                            ]
                         },
                         pet: { name: "สัตว์เลี้ยง 1", image: "images/Giyu&Shinobu.png" },
                         skill_order: "1 -> 2",
@@ -293,4 +309,79 @@
             if (!target) return;
 
             document.getElementById('modalEnemyTitle').innerText = `⚔️ ${target.enemy_name}`;
-            document.getElementById('modalEnemySub').innerText = `แผนศัตรู: ${target.formation} | ทีมแก้จัดไว้
+            document.getElementById('modalEnemySub').innerText = `แผนศัตรู: ${target.formation} | ทีมแก้จัดไว้ทั้งหมด ${target.counter_teams.length} ทีม`;
+
+            const container = document.getElementById('modalCounterList');
+            let html = '';
+
+            target.counter_teams.forEach((team, idx) => {
+                html += `
+                    <div class="counter-team-box p-3 mb-3 shadow-sm">
+                        <div class="d-flex justify-content-between align-items-center mb-2 border-bottom pb-2">
+                            <h6 class="fw-bold m-0 text-success">🗡️ ทีมตีที่ ${idx+1}: ${team.attacker}</h6>
+                            <span class="badge bg-success">แผน ${team.formation}</span>
+                        </div>
+
+                        <div class="row g-2 align-items-center mb-2">
+                            <div class="col-8">
+                                <div class="d-flex align-items-center gap-1 mb-1">
+                                    <span class="zone-label badge-back">B</span>
+                                    <div class="d-flex gap-1">${renderHeroSlots(team.selected_heroes.back, 'back-slot')}</div>
+                                </div>
+                                <div class="d-flex align-items-center gap-1">
+                                    <span class="zone-label badge-front">F</span>
+                                    <div class="d-flex gap-1">${renderHeroSlots(team.selected_heroes.front, 'front-slot')}</div>
+                                </div>
+                            </div>
+                            <div class="col-4 text-center">
+                                <div class="view-pet-slot mx-auto">
+                                    ${team.pet ? `<img src="${team.pet.image}" class="img-fluid" style="height:100%; object-fit:cover;">` : '<span class="text-muted" style="font-size:0.55rem;">ไม่มี</span>'}
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="bg-light p-2 rounded small text-dark">
+                            ${renderHeroDetails(team.selected_heroes.back, team.selected_heroes.front)}
+                            <div class="mt-2 pt-1 border-top">
+                                <div><b>🔢 ลำดับสกิล:</b> <span class="text-danger fw-bold">${team.skill_order || 'ไม่ระบุ'}</span></div>
+                                <div><b>📝 หมายเหตุ:</b> ${team.note || '-'}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+            counterModal.show();
+        }
+
+        function renderHeroSlots(heroArray, slotClass) {
+            if (!heroArray || heroArray.length === 0) return '';
+            return heroArray.map(hero => {
+                if (hero) {
+                    return `
+                        <div class="view-hero-slot ${slotClass}" title="${hero.name}">
+                            <img src="${hero.image}" class="img-fluid" style="height:100%; object-fit:cover;">
+                            ${hero.ring ? `<img src="${hero.ring.image}" class="view-ring-thumb" title="${hero.ring.name}">` : ''}
+                        </div>
+                    `;
+                } else {
+                    return `<div class="view-hero-slot ${slotClass}"><span class="text-muted" style="font-size:0.55rem;">ว่าง</span></div>`;
+                }
+            }).join('');
+        }
+
+        function renderHeroDetails(backChars, frontChars) {
+            const all = [...(backChars||[]), ...(frontChars||[])].filter(h => h !== null);
+            if (all.length === 0) return '<span class="text-muted">ยังไม่ได้เลือกตัวละคร</span>';
+
+            return all.map(h => `
+                <div>
+                    <b>• ${h.name}:</b> แหวน <span class="text-danger">${h.ring ? h.ring.name : 'ไม่มี'}</span> 
+                    ${h.itemDesc ? `<i>(${h.itemDesc})</i>` : ''}
+                </div>
+            `).join('');
+        }
+    </script>
+</body>
+</html>
