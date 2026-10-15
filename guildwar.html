@@ -19,26 +19,25 @@
 
         /* รูปพื้นหลังดึงจากภาพที่อัปโหลด */
         .bg-infinity-castle {
-            background: linear-gradient(rgba(15, 8, 3, 0.75), rgba(15, 8, 3, 0.85)),
+            background: linear-gradient(rgba(15, 8, 3, 0.65), rgba(15, 8, 3, 0.75)),
                         url('images/Bg.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
             position: relative;
         }
 
-        /* แผ่นกระจกเบลอพื้นหลัง 80% (blur 15px) */
+        /* แผ่นกระจกเบลอพื้นหลัง 5% (เท่ากับหน้าแรก) */
         .blur-overlay {
             min-height: 100vh;
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            background: rgba(0, 0, 0, 0.4);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
         }
 
         h1, h2, h3, h5, h6 {
             font-family: 'Kanit', sans-serif;
         }
 
-        /* แต่งปุ่มกลับหน้าแรกแบบสไตล์ Demon Slayer เรืองแสง */
+        /* ปุ่มกลับหน้าแรก */
         .btn-home {
             font-family: 'Kanit', sans-serif;
             font-weight: 600;
@@ -82,9 +81,9 @@
             transform: translateY(-2px);
         }
 
-        /* กระดานจัดทีมตรงกลาง: พื้นหลังสีขาวความจาง 90% */
+        /* กระดานจัดทีมตรงกลาง: พื้นหลังสีขาวความจาง 80% */
         .formation-board {
-            background: rgba(255, 255, 255, 0.9);
+            background: rgba(255, 255, 255, 0.8);
             border: 2px solid #e5e7eb;
             border-radius: 20px;
             box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
@@ -174,7 +173,7 @@
 </head>
 <body class="bg-infinity-castle text-light">
 
-    <!-- ชั้น Blur Overlay เบลอพื้นหลัง 80% -->
+    <!-- ชั้น Blur Overlay เบลอพื้นหลัง 5% -->
     <div class="blur-overlay py-4">
         <div class="container">
             
@@ -193,7 +192,7 @@
                 </div>
             </div>
 
-            <!-- กระดานจัดทีมหลัก (พื้นหลังสีขาวความจาง 90%) -->
+            <!-- กระดานจัดทีมหลัก (พื้นหลังสีขาวความจาง 80%) -->
             <div class="formation-board p-4">
                 <div class="row align-items-center g-3">
                     
@@ -311,14 +310,12 @@
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // ข้อมูลตัวละครจำลอง (ใช้รูปจาก folder images/ หรือ ลิงก์ออนไลน์)
         const availableHeroes = [
             { id: 1, name: "กิยู", image: "images/Giyu&Shinobu.png" },
             { id: 2, name: "ชิโนบุ", image: "images/Giyu&Shinobu.png" },
             { id: 3, name: "ทันจิโร่", image: "images/Bg.jpg" }
         ];
 
-        // ข้อมูลสัตว์เลี้ยงจำลอง
         const availablePets = [
             { id: 101, name: "สัตว์เลี้ยง 1", image: "images/Giyu&Shinobu.png" },
             { id: 102, name: "สัตว์เลี้ยง 2", image: "images/Bg.jpg" }
@@ -331,7 +328,6 @@
 
         let heroModal, petModal, formationModalInstance;
 
-        // เรียกทำงานเมื่อโหลดหน้าเว็บเรียบร้อย
         document.addEventListener("DOMContentLoaded", function() {
             heroModal = new bootstrap.Modal(document.getElementById('selectHeroModal'));
             petModal = new bootstrap.Modal(document.getElementById('selectPetModal'));
