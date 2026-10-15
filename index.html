@@ -14,52 +14,64 @@
             margin: 0;
             font-family: 'Prompt', sans-serif;
             overflow-x: hidden;
+            background-color: #0f0803;
         }
 
         /* รูปพื้นหลังดึงจากภาพที่อัปโหลด (images/Bg.jpg) */
         .bg-infinity-castle {
-            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)),
+            background: linear-gradient(rgba(15, 8, 3, 0.65), rgba(15, 8, 3, 0.75)),
                         url('images/Bg.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
+            position: relative;
         }
 
-        /* สีสันข้อความและ Effect ข้อความเรืองแสง */
+        /* แผ่นกระจกเบลอพื้นหลังประมาณ 5% (5px) */
+        .blur-overlay {
+            min-height: 100vh;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+        }
+
+        /* 1. ข้อความ GRAND OPENING - โทนสีทองเพลิงปราสาท */
         .text-grand-opening {
             font-family: 'Kanit', sans-serif;
             font-size: clamp(2.5rem, 6vw, 5.5rem);
             font-weight: 800;
-            background: linear-gradient(45deg, #ff4e50, #f9d423, #ff007f);
+            background: linear-gradient(135deg, #FFE066 0%, #F59E0B 50%, #D97706 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 20px rgba(255, 78, 80, 0.4);
-            letter-spacing: 2px;
+            text-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+            letter-spacing: 3px;
         }
 
+        /* 2. ข้อความตัวละคร - โทนสีปราณวารีผสานสีผีเสื้อ (ฟ้า/น้ำเงิน/ม่วง) */
         .text-characters {
             font-family: 'Kanit', sans-serif;
             font-size: clamp(1.2rem, 3.5vw, 2.5rem);
             font-weight: 600;
-            background: linear-gradient(90deg, #3a7bd5 0%, #3a7bd5 45%, #e100ff 55%, #f4c4f3 100%);
+            background: linear-gradient(90deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            text-shadow: 0 0 15px rgba(225, 0, 255, 0.3);
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
         }
 
+        /* 3. ตัวจับเวลา - โทนสีทองสว่างเรืองแสง */
         .text-countdown {
             font-family: 'Kanit', sans-serif;
             font-size: clamp(2.5rem, 7vw, 6rem);
             font-weight: 800;
-            color: #00ffcc;
-            text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+            color: #FDE047;
+            text-shadow: 0 0 20px rgba(253, 224, 71, 0.8), 0 0 40px rgba(245, 158, 11, 0.5);
         }
 
+        /* 4. ข้อความเมื่อเวลาสิ้นสุด - โทนส้มแดงเนียนตา */
         .text-launching {
             font-family: 'Kanit', sans-serif;
             font-size: clamp(2.5rem, 7vw, 6rem);
             font-weight: 800;
-            color: #ff0055;
-            text-shadow: 0 0 20px #ff0055, 0 0 40px #ff0055;
+            color: #EF4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(245, 158, 11, 0.6);
             animation: pulse 1s infinite alternate;
         }
 
@@ -67,7 +79,7 @@
         .floating-couple {
             max-width: 320px;
             height: auto;
-            filter: drop-shadow(0 12px 20px rgba(0,0,0,0.8));
+            filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.9));
             animation: float 3.5s ease-in-out infinite;
         }
 
@@ -83,85 +95,23 @@
         }
     </style>
 </head>
-<body class="bg-infinity-castle text-light d-flex align-items-center justify-content-center">
+<body class="bg-infinity-castle text-light">
 
-    <div class="container text-center py-5">
-        
-        <!-- บรรทัดบน: Grand Opening -->
-        <h1 class="text-grand-opening mb-2">GRAND OPENING</h1>
+    <!-- ชั้น Blur Overlay ทำหน้าที่เบลอพื้นหลัง 5% -->
+    <div class="blur-overlay d-flex align-items-center justify-content-center">
+        <div class="container text-center py-5">
+            
+            <!-- บรรทัดบน: Grand Opening -->
+            <h1 class="text-grand-opening mb-2">GRAND OPENING</h1>
 
-        <!-- บรรทัดกลาง: Giyu Tomioka & Shinobu Kocho -->
-        <p class="text-characters mb-3">Giyu Tomioka & Shinobu Kocho</p>
+            <!-- บรรทัดกลาง: Giyu Tomioka & Shinobu Kocho -->
+            <p class="text-characters mb-3">Giyu Tomioka & Shinobu Kocho</p>
 
-        <!-- รูปภาพคู่ลอยอยู่ตรงกลางเหนือตัวจับเวลา -->
-        <div class="d-flex justify-content-center align-items-center my-3">
-            <img src="images/Giyu&Shinobu.png" alt="Giyu and Shinobu" class="floating-couple img-fluid">
-        </div>
+            <!-- รูปภาพคู่ลอยอยู่ตรงกลางเหนือตัวจับเวลา -->
+            <div class="d-flex justify-content-center align-items-center my-3">
+                <img src="images/Giyu&Shinobu.png" alt="Giyu and Shinobu" class="floating-couple img-fluid">
+            </div>
 
-        <!-- บรรทัดล่าง: ตัวหนังสือใหญ่ๆ แสดงการจับเวลาถอยหลัง -->
-        <div class="mt-2">
-            <div id="countdown" class="text-countdown">00:00:00</div>
-        </div>
-
-    </div>
-
-    <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- JS Library สำหรับยิงพลุ (Canvas Confetti) -->
-    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
-
-    <script>
-        // กำหนดเวลาเป้าหมาย: 10:00 น. ของวันนี้
-        const now = new Date();
-        const targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0).getTime();
-
-        const countdownElement = document.getElementById('countdown');
-
-        // ฟังก์ชันจุดพลุฉลอง
-        function launchFireworks() {
-            var duration = 5 * 1000;
-            var animationEnd = Date.now() + duration;
-            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
-
-            var interval = setInterval(function() {
-                var timeLeft = animationEnd - Date.now();
-                if (timeLeft <= 0) {
-                    return clearInterval(interval);
-                }
-                var particleCount = 50 * (timeLeft / duration);
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
-                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
-            }, 250);
-        }
-
-        function randomInRange(min, max) {
-            return Math.random() * (max - min) + min;
-        }
-
-        // ระบบนับถอยหลัง
-        const timer = setInterval(function() {
-            const currentTime = new Date().getTime();
-            const difference = targetTime - currentTime;
-
-            if (difference <= 0) {
-                // เมื่อถึงเวลา 10:00 น.
-                clearInterval(timer);
-                countdownElement.innerText = "Launching Now !!";
-                countdownElement.className = "text-launching";
-                launchFireworks(); // จุดพลุ
-            } else {
-                // คำนวณเวลา ชั่วโมง:นาที:วินาที
-                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
-                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
-
-                const hDisplay = hours < 10 ? "0" + hours : hours;
-                const mDisplay = minutes < 10 ? "0" + minutes : minutes;
-                const sDisplay = seconds < 10 ? "0" + seconds : seconds;
-
-                countdownElement.innerText = `${hDisplay}:${mDisplay}:${sDisplay}`;
-            }
-        }, 1000);
-    </script>
-</body>
-</html>
+            <!-- บรรทัดล่าง: ตัวหนังสือใหญ่ๆ แสดงการจับเวลาถอยหลัง -->
+            <div class="mt-2">
+                <div id="countdown" class="text-countdown">00:00
