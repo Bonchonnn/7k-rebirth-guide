@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="icon" type="image/png" href="images/favicon-7k-war.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guild War Dashboard - Seven Knights</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;700;800&family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Prompt', sans-serif;
+            background-color: #0f0803;
+        }
+        .bg-infinity-castle {
+            background: linear-gradient(rgba(15, 8, 3, 0.65), rgba(15, 8, 3, 0.75)),
+                        url('images/Bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+        .blur-overlay {
+            min-height: 100vh;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding-bottom: 50px;
+        }
+        h1, h2, h3, h4, h5, h6 { font-family: 'Kanit', sans-serif; }
+
+        .btn-home {
+            font-family: 'Kanit', sans-serif; font-weight: 600;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            border: 2px solid #6EE7B7; color: #fff; padding: 6px 18px; border-radius: 50px;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5); text-decoration: none;
+        }
+        .btn-view {
+            font-family: 'Kanit', sans-serif; font-weight: 600;
+            background: linear-gradient(135deg, #3B82F6 0%, #1D4ED8 100%);
+            border: 2px solid #93C5FD; color: #fff; padding: 6px 18px; border-radius: 50px;
+            box-shadow: 0 0 12px rgba(59, 130, 246, 0.5); text-decoration: none;
+        }
+        .formation-board {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #e5e7eb; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            max-width: 900px; margin: 0 auto; color: #1f2937;
+        }
+
+        .slot-box {
+            width: 80px; height: 100px; border: 2px dashed #9ca3af;
+            border-radius: 10px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center; background: rgba(243, 244, 246, 0.9);
+            cursor: pointer; position: relative; transition: all 0.2s;
+        }
+        .slot-box:hover { border-color: #f59e0b; background: #fef3c7; }
+        .slot-box.filled { border-style: solid; border-color: #10b981; background: #d1fae5; }
+        .slot-box.disabled-slot { opacity: 0.4; cursor: not-allowed; background: #e5e7eb; }
+
+        .pet-slot, .ring-slot {
+            width: 70px; height: 70px; border: 2px dashed #f59e0b;
+            border-radius: 10px; display: flex; align-items: center; justify-content: center;
+            background: #fef3c7; cursor: pointer; overflow: hidden;
+        }
+
+        .zone-label {
+            width: 32px; height: 32px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-family: 'Kanit', sans-serif; color: white;
+        }
+        .badge-front { background-color: #ef4444; }
+        .badge-back { background-color: #3b82f6; }
+
+        /* เลือกรูปภาพไอเทม / ตัวละคร */
+        .select-card-img {
+            border: 2px solid transparent; border-radius: 10px; cursor: pointer; transition: all 0.2s;
+        }
+        .select-card-img:hover { border-color: #f59e0b; transform: scale(1.05); }
+
+        /* Modal ล็อกรหัสผ่าน */
+        #loginOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(15, 8, 3, 0.95); z-index: 9999;
+            display: flex; align-items: center; justify-content: center;
+        }
+    </style>
+</head>
+<body class="bg-infinity-castle text-light">
+
+    <!-- หน้าต่างใส่รหัสผ่านก่อนเข้า แดชบอร์ด -->
+    <div id="loginOverlay">
+        <div class="card bg-dark text-light border-warning p-4 shadow-lg text-center" style="max-width: 400px; width: 90%;">
+            <h3 class="text-warning fw-bold mb-3">🔒 รหัสผ่านเข้าแดชบอร์ด</h3>
+            <p class="text-muted small">กรุณากรอกรหัสผ่านของกิลด์เพื่อจัดการทีม</p>
+            <input type="password" id="passInput" class="form-control text-center mb-3 fw-bold" placeholder="กรอกรหัสผ่าน...">
+            <button class="btn btn-warning fw-bold w-100" onclick="checkPassword()">เข้าสู่ระบบแดชบอร์ด</button>
+            <span id="passError" class="text-danger small mt-2 d-none">❌ รหัสผ่านไม่ถูกต้อง!</span>
+        </div>
+    </div>
+
+    <!-- เนื้อหาหลักแดชบอร์ด -->
+    <div class="blur-overlay py-4 d-none" id="dashboardContent">
+        <div class="container">
+            
+            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <div>
+                    <h3 class="text-warning fw-bold m-0">⚙️ แดชบอร์ดจัดทีมกิลด์วอ</h3>
+                    <small class="text-light opacity-75">เลือกตัวละครได้สูงสุด 3 ตัวเท่านั้น</small>
+                </div>
+                <div class="d-flex gap-2">
+                    <button class="btn btn-warning btn-sm rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#formationModal">
+                        ⚙️ เปลี่ยนแผน (<span id="currentFormText">หน้า 2 / หลัง 3</span>)
+                    </button>
+                    <a href="guildwar-view.html" class="btn-view btn-sm">🏰 หน้าดูบ้าน</a>
+                    <a href="index.html" class="btn-home btn-sm">🏠 หน้าแรก</a>
+                </div>
+            </div>
+
+            <div class="formation-board p-4">
+                
+                <!-- ชื่อบ้าน / ชื่อผู้เล่น -->
+                <div class="mb-4">
+                    <label class="form-label fw-bold text-dark">🏠 ชื่อบ้าน / ผู้เล่นกิลด์:</label>
+                    <input type="text" id="houseName" class="form-control form-control-lg border-primary" placeholder="เช่น บ้านที่ 1 - Giyu">
+                </div>
+
+                <!-- กระดานจัดตำแหน่ง 5 ช่อง (จำกัดลงแค่ 3 ตัว) -->
+                <div class="row align-items-center g-3 mb-4">
+                    <div class="col-md-9 border-end-md pe-md-4">
+                        
+                        <!-- แถวหลัง B -->
+                        <div class="mb-3 p-3 rounded bg-white border shadow-sm">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="zone-label badge-back">B</div>
+                                <div id="backSlots" class="d-flex gap-2 justify-content-center flex-grow-1 flex-wrap"></div>
+                            </div>
+                        </div>
+
+                        <!-- แถวหน้า F -->
+                        <div class="p-3 rounded bg-white border shadow-sm">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="zone-label badge-front">F</div>
+                                <div id="frontSlots" class="d-flex gap-2 justify-content-center flex-grow-1 flex-wrap"></div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <!-- สัตว์เลี้ยงประจำทีม -->
+                    <div class="col-md-3 text-center">
+                        <span class="small text-dark fw-bold d-block mb-2">🐾 สัตว์เลี้ยงประจำทีม</span>
+                        <div class="d-flex justify-content-center">
+                            <div id="petSlot" class="pet-slot shadow-sm" onclick="openPetSelector()">
+                                <span class="text-muted small text-center">+ เลือก<br>สัตว์เลี้ยง</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- รายละเอียดเฉพาะตัวละคร 3 ตัวที่เลือก (แหวน + อธิบายไอเทม) -->
+                <hr class="my-4">
+                <h5 class="fw-bold text-primary mb-3">💍 ตั้งค่าแหวนและไอเทมเฉพาะตัวละคร (3 ตัว)</h5>
+                <div id="heroDetailsContainer" class="row g-3 mb-4">
+                    <p class="text-muted text-center">โปรดเลือกตัวละครในแผนด้านบนก่อนครับ</p>
+                </div>
+
+                <!-- การเรียงการออกสกิล & คำอธิบายภาพรวมทีม -->
+                <hr class="my-4">
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">🔢 ลำดับการออกสกิล (Skill Order):</label>
+                        <input type="text" id="skillOrder" class="form-control" placeholder="เช่น สกิล 1 -> สกิล 3 -> สกิล 2">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label fw-bold text-dark">📝 คำอธิบายภาพรวมของทีม:</label>
+                        <textarea id="teamDescription" class="form-control" rows="2" placeholder="อธิบายจุดเด่นหรือแนวทางการเล่นของทีมนี้..."></textarea>
+                    </div>
+                </div>
+
+                <!-- ปุ่มบันทึก -->
+                <div class="text-center">
+                    <button class="btn btn-success btn-lg fw-bold px-5 shadow rounded-pill" onclick="saveTeamToDatabase()">💾 บันทึกแผนบ้านกิลด์วอ</button>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Modals เลือกสิ่งต่างๆ -->
+    <!-- Modal เปลี่ยนแผน -->
+    <div class="modal fade" id="formationModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-warning fw-bold">เลือกแผน Formation</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-2">
+                        <div class="col-6"><button class="btn btn-outline-warning w-100 py-3" onclick="changeFormation('2-3', 'หน้า 2 / หลัง 3')">หน้า 2 / หลัง 3</button></div>
+                        <div class="col-6"><button class="btn btn-outline-warning w-100 py-3" onclick="changeFormation('3-2', 'หน้า 3 / หลัง 2')">หน้า 3 / หลัง 2</button></div>
+                        <div class="col-6"><button class="btn btn-outline-warning w-100 py-3" onclick="changeFormation('1-4', 'หน้า 1 / หลัง 4')">หน้า 1 / หลัง 4</button></div>
+                        <div class="col-6"><button class="btn btn-outline-warning w-100 py-3" onclick="changeFormation('4-1', 'หน้า 4 / หลัง 1')">หน้า 4 / หลัง 1</button></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal เลือกตัวละคร (รูปภาพ) -->
+    <div class="modal fade" id="selectHeroModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-warning fw-bold">เลือกตัวละคร (จำกัด 3 ตัว)</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-outline-danger w-100 mb-3 btn-sm" onclick="removeHeroFromSlot()">❌ ถอดตัวละครออก</button>
+                    <div id="heroListContainer" class="row g-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal เลือกแหวน (รูปภาพ) -->
+    <div class="modal fade" id="selectRingModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-warning fw-bold">เลือกแหวนประจําตัวละคร</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-outline-danger w-100 mb-3 btn-sm" onclick="removeRing()">❌ ถอดแหวนออก</button>
+                    <div id="ringListContainer" class="row g-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal เลือกสัตว์เลี้ยง (รูปภาพ) -->
+    <div class="modal fade" id="selectPetModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content bg-dark text-light border-secondary">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title text-warning fw-bold">เลือกสัตว์เลี้ยง</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <button class="btn btn-outline-danger w-100 mb-3 btn-sm" onclick="removePet()">❌ ถอดสัตว์เลี้ยง</button>
+                    <div id="petListContainer" class="row g-2"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // ----------------------------------------------------------------
+        // ตั้งค่ารหัสผ่านเข้าแดชบอร์ด & Supabase
+        // ----------------------------------------------------------------
+        const DASHBOARD_PASSWORD = "7kwar"; // << ตั้งรหัสผ่านเข้าแดชบอร์ดที่นี่
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // คลังรูปภาพตัวละคร, แหวน, สัตว์เลี้ยง
+        const availableHeroes = [
+            { id: 1, name: "กิยู", image: "images/Giyu&Shinobu.png" },
+            { id: 2, name: "ชิโนบุ", image: "images/Giyu&Shinobu.png" },
+            { id: 3, name: "ทันจิโร่", image: "images/Bg.jpg" }
+        ];
+
+        const availableRings = [
+            { id: 201, name: "แหวนชุบชีวิต", image: "images/favicon-7k-war.png" },
+            { id: 202, name: "แหวนสถานะ", image: "images/Giyu&Shinobu.png" }
+        ];
+
+        const availablePets = [
+            { id: 101, name: "สัตว์เลี้ยง 1", image: "images/Giyu&Shinobu.png" },
+            { id: 102, name: "สัตว์เลี้ยง 2", image: "images/Bg.jpg" }
+        ];
+
+        let currentFormation = "2-3";
+        let teamData = { front: [null, null], back: [null, null, null] };
+        let selectedPet = null;
+        let activeSlot = null;
+        let activeRingHeroIndex = null;
+
+        let heroModal, ringModal, petModal, formModal;
+
+        document.addEventListener("DOMContentLoaded", function() {
+            heroModal = new bootstrap.Modal(document.getElementById('selectHeroModal'));
+            ringModal = new bootstrap.Modal(document.getElementById('selectRingModal'));
+            petModal = new bootstrap.Modal(document.getElementById('selectPetModal'));
+            formModal = new bootstrap.Modal(document.getElementById('formationModal'));
+            renderBoard();
+        });
+
+        function checkPassword() {
+            const pass = document.getElementById('passInput').value;
+            if (pass === DASHBOARD_PASSWORD) {
+                document.getElementById('loginOverlay').classList.add('d-none');
+                document.getElementById('dashboardContent').classList.remove('d-none');
+            } else {
+                document.getElementById('passError').classList.remove('d-none');
+            }
+        }
+
+        function changeFormation(key, text) {
+            currentFormation = key;
+            document.getElementById('currentFormText').innerText = text;
+            formModal.hide();
+            renderBoard();
+        }
+
+        function renderBoard() {
+            const frontContainer = document.getElementById('frontSlots');
+            const backContainer = document.getElementById('backSlots');
+            frontContainer.innerHTML = ''; backContainer.innerHTML = '';
+
+            let frontCount = 2, backCount = 3;
+            if (currentFormation === "3-2") { frontCount = 3; backCount = 2; }
+            if (currentFormation === "1-4") { frontCount = 1; backCount = 4; }
+            if (currentFormation === "4-1") { frontCount = 4; backCount = 1; }
+
+            teamData.front = Array(frontCount).fill(null);
+            teamData.back = Array(backCount).fill(null);
+
+            for (let i = 0; i < backCount; i++) backContainer.appendChild(createSlot('back', i));
+            for (let i = 0; i < frontCount; i++) frontContainer.appendChild(createSlot('front', i));
+
+            renderPetSlot();
+            renderHeroDetails();
+        }
+
+        function countTotalHeroes() {
+            let count = 0;
+            [...teamData.front, ...teamData.back].forEach(h => { if(h) count++; });
+            return count;
+        }
+
+        function createSlot(line, index) {
+            const slot = document.createElement('div');
+            slot.className = 'slot-box';
+            const hero = teamData[line][index];
+
+            if (hero) {
+                slot.classList.add('filled');
+                slot.innerHTML = `<img src="${hero.image}" class="img-fluid rounded" style="max-height: 80px; object-fit: cover;">`;
+            } else {
+                slot.innerHTML = `<span class="text-muted small fw-bold">+ เลือก</span>`;
+            }
+
+            slot.onclick = () => {
+                if (!hero && countTotalHeroes() >= 3) {
+                    alert('⚠️ กิลด์วอจำกัดตัวละครลงได้สูงสุดเพียง 3 ตัวเท่านั้นครับ!');
+                    return;
+                }
+                activeSlot = { line, index };
+                openHeroSelector();
+            };
+            return slot;
+        }
+
+        function openHeroSelector() {
+            const container = document.getElementById('heroListContainer');
+            let html = '';
+            availableHeroes.forEach(hero => {
+                html += `
+                    <div class="col-4 text-center">
+                        <div class="card bg-secondary text-light p-2 border-0 select-card-img" onclick="selectHero(${hero.id})">
+                            <img src="${hero.image}" class="img-fluid rounded mb-1" style="height: 60px; object-fit: cover;">
+                            <span class="small fw-bold text-truncate d-block">${hero.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            heroModal.show();
+        }
+
+        function selectHero(id) {
+            const hero = availableHeroes.find(h => h.id === id);
+            if (activeSlot) {
+                // สร้าง Object ตัวละครเฉพาะ
+                teamData[activeSlot.line][activeSlot.index] = { ...hero, ring: null, itemDesc: '' };
+                renderBoard();
+                heroModal.hide();
+            }
+        }
+
+        function removeHeroFromSlot() {
+            if (activeSlot) {
+                teamData[activeSlot.line][activeSlot.index] = null;
+                renderBoard();
+                heroModal.hide();
+            }
+        }
+
+        // แสดงรายชื่อและกล่องตั้งค่าแหวน/ไอเทม ของตัวละคร 3 ตัวที่เลือก
+        function renderHeroDetails() {
+            const container = document.getElementById('heroDetailsContainer');
+            const allHeroes = [];
+
+            [...teamData.back, ...teamData.front].forEach((hero, idx) => {
+                if (hero) allHeroes.push({ hero, idx });
+            });
+
+            if (allHeroes.length === 0) {
+                container.innerHTML = '<p class="text-muted text-center">โปรดเลือกตัวละครในแผนด้านบนก่อนครับ</p>';
+                return;
+            }
+
+            let html = '';
+            allHeroes.forEach((item, i) => {
+                const h = item.hero;
+                html += `
+                    <div class="col-md-4">
+                        <div class="card p-3 bg-light border shadow-sm">
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <img src="${h.image}" class="rounded" style="width: 45px; height: 55px; object-fit: cover;">
+                                <h6 class="fw-bold m-0 text-dark">ตัวที่ ${i+1}: ${h.name}</h6>
+                            </div>
+                            
+                            <!-- เลือกแหวน -->
+                            <div class="d-flex align-items-center gap-2 mb-2">
+                                <span class="small text-dark fw-bold">แหวน:</span>
+                                <div class="ring-slot" onclick="openRingSelector(${i})">
+                                    ${h.ring ? `<img src="${h.ring.image}" class="img-fluid" style="max-height:60px;">` : `<span class="text-muted small">+ แหวน</span>`}
+                                </div>
+                            </div>
+
+                            <!-- คำอธิบายไอเทมเฉพาะตัว -->
+                            <input type="text" class="form-control form-control-sm" placeholder="คำอธิบายไอเทม/ออปชั่น..." 
+                                   value="${h.itemDesc || ''}" onchange="updateItemDesc(${i}, this.value)">
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+        }
+
+        function openRingSelector(heroIndex) {
+            activeRingHeroIndex = heroIndex;
+            const container = document.getElementById('ringListContainer');
+            let html = '';
+            availableRings.forEach(ring => {
+                html += `
+                    <div class="col-6 text-center">
+                        <div class="card bg-secondary text-light p-2 border-0 select-card-img" onclick="selectRing(${ring.id})">
+                            <img src="${ring.image}" class="img-fluid rounded mb-1" style="height: 50px; object-fit: cover;">
+                            <span class="small fw-bold text-truncate d-block">${ring.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            ringModal.show();
+        }
+
+        function selectRing(ringId) {
+            const ring = availableRings.find(r => r.id === ringId);
+            const selectedList = getSelectedHeroesList();
+            if (selectedList[activeRingHeroIndex]) {
+                selectedList[activeRingHeroIndex].hero.ring = ring;
+                renderHeroDetails();
+                ringModal.hide();
+            }
+        }
+
+        function removeRing() {
+            const selectedList = getSelectedHeroesList();
+            if (selectedList[activeRingHeroIndex]) {
+                selectedList[activeRingHeroIndex].hero.ring = null;
+                renderHeroDetails();
+                ringModal.hide();
+            }
+        }
+
+        function updateItemDesc(heroIndex, val) {
+            const selectedList = getSelectedHeroesList();
+            if (selectedList[heroIndex]) {
+                selectedList[heroIndex].hero.itemDesc = val;
+            }
+        }
+
+        function getSelectedHeroesList() {
+            const list = [];
+            teamData.back.forEach((h) => { if(h) list.push({ hero: h }); });
+            teamData.front.forEach((h) => { if(h) list.push({ hero: h }); });
+            return list;
+        }
+
+        // สัตว์เลี้ยง
+        function renderPetSlot() {
+            const petContainer = document.getElementById('petSlot');
+            if (selectedPet) {
+                petContainer.innerHTML = `<img src="${selectedPet.image}" class="img-fluid rounded" style="max-height: 65px; object-fit: cover;">`;
+            } else {
+                petContainer.innerHTML = `<span class="text-muted small fw-bold text-center">+ เลือก<br>สัตว์เลี้ยง</span>`;
+            }
+        }
+
+        function openPetSelector() {
+            const container = document.getElementById('petListContainer');
+            let html = '';
+            availablePets.forEach(pet => {
+                html += `
+                    <div class="col-6 text-center">
+                        <div class="card bg-secondary text-light p-2 border-0 select-card-img" onclick="selectPet(${pet.id})">
+                            <img src="${pet.image}" class="img-fluid rounded mb-1" style="height: 50px; object-fit: cover;">
+                            <span class="small fw-bold text-truncate d-block">${pet.name}</span>
+                        </div>
+                    </div>
+                `;
+            });
+            container.innerHTML = html;
+            petModal.show();
+        }
+
+        function selectPet(id) {
+            selectedPet = availablePets.find(p => p.id === id);
+            renderPetSlot();
+            petModal.hide();
+        }
+
+        function removePet() {
+            selectedPet = null;
+            renderPetSlot();
+            petModal.hide();
+        }
+
+        // บันทึกเข้า Supabase SQL
+        async function saveTeamToDatabase() {
+            const houseName = document.getElementById('houseName').value.trim();
+            if (!houseName) {
+                alert('กรุณากรอกชื่อบ้าน / ผู้เล่นก่อนบันทึกครับ!');
+                return;
+            }
+
+            const payload = {
+                house_name: houseName,
+                formation: currentFormation,
+                selected_heroes: JSON.stringify({ front: teamData.front, back: teamData.back }),
+                pet: JSON.stringify(selectedPet),
+                skill_order: document.getElementById('skillOrder').value.trim(),
+                team_description: document.getElementById('teamDescription').value.trim()
+            };
+
+            const { data, error } = await supabaseClient.from('guild_teams').insert([payload]);
+            if (error) {
+                alert('❌ เกิดข้อผิดพลาดในการบันทึก: ' + error.message);
+            } else {
+                alert('✅ บันทึกแผนบ้านกิลด์วอลงระบบสำเร็จ!');
+                window.location.href = 'guildwar-view.html'; // ไปหน้าดูบ้าน
+            }
+        }
+    </script>
+</body>
+</html>
