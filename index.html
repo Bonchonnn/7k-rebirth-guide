@@ -114,4 +114,80 @@
 
             <!-- บรรทัดล่าง: ตัวหนังสือใหญ่ๆ แสดงการจับเวลาถอยหลัง -->
             <div class="mt-2">
-                <div id="countdown" class="text-countdown">00:00
+                <div id="countdown" class="text-countdown">00:00:00</div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Bootstrap 5 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS Library สำหรับยิงพลุ (Canvas Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        const countdownElement = document.getElementById('countdown');
+
+        // คำนวณเวลาเป้าหมาย 10:00 น.
+        function getTargetTime() {
+            const now = new Date();
+            let target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
+            
+            // หากเวลาปัจจุบันเกิน 10:00 น. ไปแล้ว ให้เลื่อนเป้าหมายเป็น 10:00 น. ของวันพรุ่งนี้
+            if (now.getTime() > target.getTime()) {
+                target.setDate(target.getDate() + 1);
+            }
+            return target.getTime();
+        }
+
+        const targetTime = getTargetTime();
+
+        // ฟังก์ชันจุดพลุฉลอง
+        function launchFireworks() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // ฟังก์ชันอัปเดตตัวนับถอยหลัง
+        function updateTimer() {
+            const currentTime = new Date().getTime();
+            const difference = targetTime - currentTime;
+
+            if (difference <= 0) {
+                countdownElement.innerText = "Launching Now !!";
+                countdownElement.className = "text-launching";
+                launchFireworks();
+            } else {
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                const hDisplay = hours < 10 ? "0" + hours : hours;
+                const mDisplay = minutes < 10 ? "0" + minutes : minutes;
+                const sDisplay = seconds < 10 ? "0" + seconds : seconds;
+
+                countdownElement.innerText = `${hDisplay}:${mDisplay}:${sDisplay}`;
+            }
+        }
+
+        // เรียกทำงานทันที 1 ครั้งเพื่อไม่ให้ค้างที่ 00:00:00 แล้วรันทุกๆ 1 วินาที
+        updateTimer();
+        setInterval(updateTimer, 1000);
+    </script>
+</body>
+</html>
