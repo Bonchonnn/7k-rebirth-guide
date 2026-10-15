@@ -3,67 +3,172 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seven Knights Rebirth - Guide & Wiki</title>
+    <title>Grand Opening - Giyu & Shinobu</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css">
+    <!-- Google Fonts (Prompt & Kanit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;800&family=Prompt:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Prompt', sans-serif;
+            overflow-x: hidden;
+        }
+
+        /* 2. พื้นหลังปราสาทไร้ขอบเขต (Infinity Castle) */
+        .bg-infinity-castle {
+            background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)),
+                        url('https://images.alphacoders.com/132/1328005.jpeg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+        }
+
+        /* สีสันข้อความและ Effect ข้อความเรืองแสง */
+        .text-grand-opening {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5.5rem);
+            font-weight: 800;
+            background: linear-gradient(45deg, #ff4e50, #f9d423, #ff007f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 20px rgba(255, 78, 80, 0.4);
+            letter-spacing: 2px;
+        }
+
+        .text-characters {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(1.2rem, 3.5vw, 2.5rem);
+            font-weight: 600;
+            background: linear-gradient(to right, #00c6ff, #0072ff, #b92b27, #1565C0);
+            background: linear-gradient(90deg, #3a7bd5 0%, #3a7bd5 45%, #e100ff 55%, #f4c4f3 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(225, 0, 255, 0.3);
+        }
+
+        .text-countdown {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 6rem);
+            font-weight: 800;
+            color: #00ffcc;
+            text-shadow: 0 0 20px #00ffcc, 0 0 40px #00ffcc;
+        }
+
+        .text-launching {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 6rem);
+            font-weight: 800;
+            color: #ff0055;
+            text-shadow: 0 0 20px #ff0055, 0 0 40px #ff0055;
+            animation: pulse 1s infinite alternate;
+        }
+
+        /* 3. รูปภาพอนิเมชันลอยขยับขึ้น-ลง (Floating Animation) */
+        .floating-hero {
+            max-width: 220px;
+            height: auto;
+            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.7));
+            animation: float 3.5s ease-in-out infinite;
+        }
+
+        .floating-hero-delay {
+            animation-delay: 1.75s;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-18px) rotate(2deg); }
+            100% { transform: translateY(0px) rotate(0deg); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
+        }
+    </style>
 </head>
-<body class="bg-dark text-light">
+<body class="bg-infinity-castle text-light d-flex align-items-center justify-content-center">
 
-    <!-- Header / Navbar -->
-    <header class="bg-secondary bg-gradient text-center py-4 border-bottom border-warning shadow-sm">
-        <div class="container">
-            <h1 class="text-warning fw-bold display-5">Seven Knights Rebirth Guide</h1>
-            <p class="m-0 text-light lead">คลังข้อมูลตัวละคร สกิล และไกด์เกมภาษาไทย</p>
-        </div>
-    </header>
+    <div class="container text-center py-5">
+        
+        <!-- บรรทัดบน: Grand Opening -->
+        <h1 class="text-grand-opening mb-2">GRAND OPENING</h1>
 
-    <main class="container my-5">
-        <section class="mb-4 text-center">
-    <div class="row g-2 align-items-center mb-3">
-        <div class="col-md-6">
-            <input type="text" id="searchInput" class="form-control bg-dark text-light border-secondary shadow-none" placeholder="🔍 ค้นหาชื่อตัวละคร...">
-        </div>
-        <div class="col-md-6 text-md-end">
-            <!-- กลุ่มปุ่มกดเลือกธาตุ -->
-            <div class="btn-group flex-wrap" role="group" id="elementFilterGroup">
-                <button type="button" class="btn btn-outline-warning active" data-element="All">ทั้งหมด</button>
-                <button type="button" class="btn btn-outline-warning" data-element="Light">Light (แสง)</button>
-                <button type="button" class="btn btn-outline-danger" data-element="Fire">Fire (ไฟ)</button>
-                <button type="button" class="btn btn-outline-purple" data-element="Dark">Dark (มืด)</button>
-            </div>
-        </div>
-    </div>
-</section>
-            </div>
-        </section>
+        <!-- บรรทัดกลาง: Giyu Tomioka & Shinobu Kocho -->
+        <p class="text-characters mb-4">Giyu Tomioka & Shinobu Kocho</p>
 
-        <!-- แสดงการ์ดตัวละคร (Hero Grid) -->
-        <section id="heroGrid" class="row row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-lg-4 g-4">
-            <!-- โค้ดจะถูกสร้างและแสดงผลผ่าน app.js -->
-        </section>
-    </main>
-
-    <!-- Bootstrap 5 Modal สำหรับแสดงรายละเอียดตัวละคร -->
-    <div class="modal fade" id="heroModal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light border-warning shadow-lg">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-warning fw-bold" id="modalHeroName">รายละเอียดตัวละคร</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body" id="modalBody">
-                    <!-- ข้อมูลสกิลจะถูกโหลดมาใส่ตรงนี้ -->
-                </div>
-            </div>
+        <!-- 3. รูปกิยูและชิโนบุ ลอยขยับขึ้น-ลง ด้านบนตัวจับเวลา -->
+        <div class="d-flex justify-content-center align-items-center gap-3 gap-md-5 my-3">
+            <img src="https://www.pngmart.com/files/22/Giyu-Tomioka-Demon-Slayer-PNG-Image.png" alt="Giyu Tomioka" class="floating-hero img-fluid">
+            <img src="https://www.pngmart.com/files/22/Shinobu-Kocho-Demon-Slayer-PNG-Clipart.png" alt="Shinobu Kocho" class="floating-hero floating-hero-delay img-fluid">
         </div>
+
+        <!-- บรรทัดล่าง: ตัวหนังสือใหญ่ๆ แสดงการจับเวลาถอยหลัง -->
+        <div class="mt-2">
+            <div id="countdown" class="text-countdown">00:00:00</div>
+        </div>
+
     </div>
 
-    <!-- Bootstrap 5 JS Bundle -->
+    <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- ไฟล์ข้อมูลและสคริปต์หลัก -->
-    <script src="heroesData.js"></script>
-    <script src="app.js"></script>
+    <!-- JS Library สำหรับยิงพลุ (Canvas Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <script>
+        // กำหนดเวลาเป้าหมาย: 10:00 น. ของวันนี้
+        const now = new Date();
+        const targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0).getTime();
+
+        const countdownElement = document.getElementById('countdown');
+
+        // ฟังก์ชันจุดพลุฉลอง
+        function launchFireworks() {
+            var duration = 5 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = 50 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
+        }
+
+        // ระบบนับถอยหลัง
+        const timer = setInterval(function() {
+            const currentTime = new Date().getTime();
+            const difference = targetTime - currentTime;
+
+            if (difference <= 0) {
+                // เมื่อถึงเวลา 10:00 น.
+                clearInterval(timer);
+                countdownElement.innerText = "Launching Now !!";
+                countdownElement.className = "text-launching";
+                launchFireworks(); // จุดพลุ
+            } else {
+                // คำนวณเวลา ชั่วโมง:นาที:วินาที
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                // แปลงตัวเลขให้มีเลข 0 นำหน้าถ้าต่ำกว่า 10
+                const hDisplay = hours < 10 ? "0" + hours : hours;
+                const mDisplay = minutes < 10 ? "0" + minutes : minutes;
+                const sDisplay = seconds < 10 ? "0" + seconds : seconds;
+
+                countdownElement.innerText = `${hDisplay}:${mDisplay}:${sDisplay}`;
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
