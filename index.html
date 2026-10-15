@@ -16,10 +16,10 @@
             overflow-x: hidden;
         }
 
-        /* 2. พื้นหลังปราสาทไร้ขอบเขต (Infinity Castle) */
+        /* รูปพื้นหลังดึงจากภาพที่อัปโหลด (images/Bg.jpg) */
         .bg-infinity-castle {
             background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.75)),
-                        url('https://images.alphacoders.com/132/1328005.jpeg') no-repeat center center fixed;
+                        url('images/Bg.jpg') no-repeat center center fixed;
             background-size: cover;
             min-height: 100vh;
         }
@@ -40,7 +40,6 @@
             font-family: 'Kanit', sans-serif;
             font-size: clamp(1.2rem, 3.5vw, 2.5rem);
             font-weight: 600;
-            background: linear-gradient(to right, #00c6ff, #0072ff, #b92b27, #1565C0);
             background: linear-gradient(90deg, #3a7bd5 0%, #3a7bd5 45%, #e100ff 55%, #f4c4f3 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
@@ -64,22 +63,18 @@
             animation: pulse 1s infinite alternate;
         }
 
-        /* 3. รูปภาพอนิเมชันลอยขยับขึ้น-ลง (Floating Animation) */
-        .floating-hero {
-            max-width: 220px;
+        /* รูปภาพคู่กิยูและชิโนบุ ดึงจากภาพที่อัปโหลด (images/Giyu&Shinobu.png) ลอยขยับขึ้น-ลง */
+        .floating-couple {
+            max-width: 320px;
             height: auto;
-            filter: drop-shadow(0 10px 15px rgba(0,0,0,0.7));
+            filter: drop-shadow(0 12px 20px rgba(0,0,0,0.8));
             animation: float 3.5s ease-in-out infinite;
         }
 
-        .floating-hero-delay {
-            animation-delay: 1.75s;
-        }
-
         @keyframes float {
-            0% { transform: translateY(0px) rotate(0deg); }
-            50% { transform: translateY(-18px) rotate(2deg); }
-            100% { transform: translateY(0px) rotate(0deg); }
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-18px); }
+            100% { transform: translateY(0px); }
         }
 
         @keyframes pulse {
@@ -96,12 +91,11 @@
         <h1 class="text-grand-opening mb-2">GRAND OPENING</h1>
 
         <!-- บรรทัดกลาง: Giyu Tomioka & Shinobu Kocho -->
-        <p class="text-characters mb-4">Giyu Tomioka & Shinobu Kocho</p>
+        <p class="text-characters mb-3">Giyu Tomioka & Shinobu Kocho</p>
 
-        <!-- 3. รูปกิยูและชิโนบุ ลอยขยับขึ้น-ลง ด้านบนตัวจับเวลา -->
-        <div class="d-flex justify-content-center align-items-center gap-3 gap-md-5 my-3">
-            <img src="https://www.pngmart.com/files/22/Giyu-Tomioka-Demon-Slayer-PNG-Image.png" alt="Giyu Tomioka" class="floating-hero img-fluid">
-            <img src="https://www.pngmart.com/files/22/Shinobu-Kocho-Demon-Slayer-PNG-Clipart.png" alt="Shinobu Kocho" class="floating-hero floating-hero-delay img-fluid">
+        <!-- รูปภาพคู่ลอยอยู่ตรงกลางเหนือตัวจับเวลา -->
+        <div class="d-flex justify-content-center align-items-center my-3">
+            <img src="images/Giyu&Shinobu.png" alt="Giyu and Shinobu" class="floating-couple img-fluid">
         </div>
 
         <!-- บรรทัดล่าง: ตัวหนังสือใหญ่ๆ แสดงการจับเวลาถอยหลัง -->
@@ -161,7 +155,6 @@
                 const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((difference % (1000 * 60)) / 1000);
 
-                // แปลงตัวเลขให้มีเลข 0 นำหน้าถ้าต่ำกว่า 10
                 const hDisplay = hours < 10 ? "0" + hours : hours;
                 const mDisplay = minutes < 10 ? "0" + minutes : minutes;
                 const sDisplay = seconds < 10 ? "0" + seconds : seconds;
