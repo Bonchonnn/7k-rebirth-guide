@@ -3,383 +3,226 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Guild War Formation - Seven Knights</title>
+    <title>Grand Opening - Giyu & Shinobu</title>
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;700&family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Google Fonts (Prompt & Kanit) -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@600;800&family=Prompt:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body {
+        body, html {
+            height: 100%;
+            margin: 0;
             font-family: 'Prompt', sans-serif;
-            background-color: #121212;
-            color: #f8f9fa;
+            overflow-x: hidden;
+            background-color: #0f0803;
         }
-        h1, h2, h3, h5 {
-            font-family: 'Kanit', sans-serif;
-        }
-        /* ดีไซน์กระดานจัดทีมสไตล์ Guild War */
-        .formation-board {
-            background: linear-gradient(145deg, #1e1e2f, #2a2a40);
-            border: 2px solid #4a4ae2;
-            border-radius: 15px;
-            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.6);
-            max-width: 850px;
-            margin: 0 auto;
-        }
-        .slot-box {
-            width: 80px;
-            height: 100px;
-            border: 2px dashed rgba(255, 255, 255, 0.3);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.2);
-            cursor: pointer;
-            transition: all 0.3s ease;
+
+        /* รูปพื้นหลังดึงจากภาพที่อัปโหลด (images/Bg.jpg) */
+        .bg-infinity-castle {
+            background: linear-gradient(rgba(15, 8, 3, 0.65), rgba(15, 8, 3, 0.75)),
+                        url('images/Bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
             position: relative;
         }
-        .slot-box:hover {
-            border-color: #ffc107;
-            background: rgba(255, 193, 7, 0.1);
-        }
-        .slot-box.filled {
-            border-style: solid;
-            border-color: #28a745;
-            background: rgba(40, 167, 69, 0.2);
-        }
-        .pet-slot {
-            width: 90px;
-            height: 110px;
-            border: 2px dashed #ffc107;
-            border-radius: 12px;
+
+        /* แผ่นกระจกเบลอพื้นหลังประมาณ 5% (5px) */
+        .blur-overlay {
+            min-height: 100vh;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             display: flex;
-            align-items: center;
+            flex-direction: column;
             justify-content: center;
-            background: rgba(255, 193, 7, 0.05);
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-        .pet-slot:hover {
-            background: rgba(255, 193, 7, 0.15);
-        }
-        .zone-label {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            display: flex;
             align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 0.85rem;
+            position: relative;
+        }
+
+        /* ปุ่มเมนูไปหน้า Guild War */
+        .btn-guildwar {
             font-family: 'Kanit', sans-serif;
+            font-weight: 600;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            border: 2px solid #FFE066;
+            color: #fff;
+            padding: 8px 20px;
+            border-radius: 50px;
+            box-shadow: 0 0 15px rgba(245, 158, 11, 0.5);
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
         }
-        .badge-front { background-color: #dc3545; color: white; }
-        .badge-back { background-color: #0d6efd; color: white; }
-        
-        /* การ์ดเลือกแผนใน Modal แบบเล็กๆ */
-        .formation-card-option {
-            border: 2px solid #444;
-            background: #1a1a2e;
-            transition: all 0.2s;
-            cursor: pointer;
+
+        .btn-guildwar:hover {
+            background: linear-gradient(135deg, #FFE066 0%, #F59E0B 100%);
+            color: #0f0803;
+            box-shadow: 0 0 25px rgba(255, 224, 102, 0.8);
+            transform: translateY(-2px);
         }
-        .formation-card-option:hover {
-            border-color: #ffc107;
-            background: #252542;
+
+        /* 1. ข้อความ GRAND OPENING - โทนสีทองเพลิงปราสาท */
+        .text-grand-opening {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 5.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFE066 0%, #F59E0B 50%, #D97706 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 25px rgba(245, 158, 11, 0.5);
+            letter-spacing: 3px;
+        }
+
+        /* 2. ข้อความตัวละคร - โทนสีปราณวารีผสานสีผีเสื้อ (ฟ้า/น้ำเงิน/ม่วง) */
+        .text-characters {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(1.2rem, 3.5vw, 2.5rem);
+            font-weight: 600;
+            background: linear-gradient(90deg, #38BDF8 0%, #818CF8 50%, #C084FC 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        /* 3. ตัวจับเวลา - โทนสีทองสว่างเรืองแสง */
+        .text-countdown {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 6rem);
+            font-weight: 800;
+            color: #FDE047;
+            text-shadow: 0 0 20px rgba(253, 224, 71, 0.8), 0 0 40px rgba(245, 158, 11, 0.5);
+        }
+
+        /* 4. ข้อความเมื่อเวลาสิ้นสุด - โทนส้มแดงเนียนตา */
+        .text-launching {
+            font-family: 'Kanit', sans-serif;
+            font-size: clamp(2.5rem, 7vw, 6rem);
+            font-weight: 800;
+            color: #EF4444;
+            text-shadow: 0 0 20px rgba(239, 68, 68, 0.8), 0 0 40px rgba(245, 158, 11, 0.6);
+            animation: pulse 1s infinite alternate;
+        }
+
+        /* รูปภาพคู่กิยูและชิโนบุ ดึงจากภาพที่อัปโหลด (images/Giyu&Shinobu.png) ลอยขยับขึ้น-ลง */
+        .floating-couple {
+            max-width: 320px;
+            height: auto;
+            filter: drop-shadow(0 12px 25px rgba(0, 0, 0, 0.9));
+            animation: float 3.5s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-18px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.05); }
         }
     </style>
 </head>
-<body class="py-4">
+<body class="bg-infinity-castle text-light">
 
-    <div class="container">
-        <!-- หัวข้อหน้าเว็บ และปุ่มเลือกแผน -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="text-warning fw-bold m-0">🛡️ จัดทีมกิลด์วอ (Guild War)</h3>
-            <div class="d-flex gap-2">
-                <button class="btn btn-warning btn-sm fw-bold px-3 shadow-sm" data-bs-toggle="modal" data-bs-target="#formationModal">
-                    ⚙️ เปลี่ยนแผน (<span id="currentFormText">หน้า 2 / หลัง 3</span>)
-                </button>
-                <a href="index.html" class="btn btn-outline-light btn-sm">🏠 หน้าแรก</a>
-            </div>
+    <!-- ชั้น Blur Overlay ทำหน้าที่เบลอพื้นหลัง 5% -->
+    <div class="blur-overlay py-4">
+        
+        <!-- เมนูด้านบนขวา สำหรับไปหน้า Guild War -->
+        <div class="container position-absolute top-0 start-0 end-0 pt-4 px-4 d-flex justify-content-end" style="z-index: 10;">
+            <a href="guildwar.html" class="btn-guildwar">
+                🛡️ จัดทีม Guild War
+            </a>
         </div>
 
-        <!-- กระดานจัดทีมหลัก (UI กลางจอ) -->
-        <div class="formation-board p-4">
-            <div class="row align-items-center">
-                
-                <!-- ฝั่งซ้าย: ช่องตัวละคร แถวหลังและแถวหน้า -->
-                <div class="col-lg-9 col-md-8 border-end border-secondary pe-lg-4">
-                    
-                    <!-- แถวหลัง (Back Line - B) -->
-                    <div class="d-flex align-items-center justify-content-between mb-3 p-2 rounded bg-black bg-opacity-25 border border-secondary">
-                        <div class="zone-label badge-back">B</div>
-                        <div id="backSlots" class="d-flex gap-2 justify-content-center flex-grow-1">
-                            <!-- สร้างด้วย JavaScript -->
-                        </div>
-                    </div>
+        <div class="container text-center my-auto">
+            
+            <!-- บรรทัดบน: Grand Opening -->
+            <h1 class="text-grand-opening mb-2">GRAND OPENING</h1>
 
-                    <!-- แถวหน้า (Front Line - F) -->
-                    <div class="d-flex align-items-center justify-content-between p-2 rounded bg-black bg-opacity-25 border border-secondary">
-                        <div class="zone-label badge-front">F</div>
-                        <div id="frontSlots" class="d-flex gap-2 justify-content-center flex-grow-1">
-                            <!-- สร้างด้วย JavaScript -->
-                        </div>
-                    </div>
+            <!-- บรรทัดกลาง: Giyu Tomioka & Shinobu Kocho -->
+            <p class="text-characters mb-3">Giyu Tomioka & Shinobu Kocho</p>
 
-                </div>
-
-                <!-- ฝั่งขวา: ช่องสัตว์เลี้ยง (Pet) -->
-                <div class="col-lg-3 col-md-4 text-center mt-3 mt-md-0 ps-lg-3">
-                    <span class="small text-warning fw-bold d-block mb-2">🐾 สัตว์เลี้ยงประจำทีม</span>
-                    <div class="d-flex justify-content-center">
-                        <div id="petSlot" class="pet-slot" onclick="openPetSelector()">
-                            <span class="text-muted small text-center">+ เลือก<br>สัตว์เลี้ยง</span>
-                        </div>
-                    </div>
-                </div>
-
+            <!-- รูปภาพคู่ลอยอยู่ตรงกลางเหนือตัวจับเวลา -->
+            <div class="d-flex justify-content-center align-items-center my-3">
+                <img src="images/Giyu&Shinobu.png" alt="Giyu and Shinobu" class="floating-couple img-fluid">
             </div>
-        </div>
-    </div>
 
-    <!-- Modal เลือกแผนกลยุทธ์ (4 แผนในจอเดียว) -->
-    <div class="modal fade" id="formationModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light border-secondary">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-warning">เลือกแผนกลยุทธ์ (Formation)</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="row g-2">
-                        <div class="col-6">
-                            <div class="p-3 rounded formation-card-option text-center" onclick="changeFormation('2-3', 'หน้า 2 / หลัง 3')">
-                                <h6 class="text-info fw-bold mb-1">หน้า 2 / หลัง 3</h6>
-                                <p class="text-muted small mb-0">มาตรฐานสมดุล</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 rounded formation-card-option text-center" onclick="changeFormation('3-2', 'หน้า 3 / หลัง 2')">
-                                <h6 class="text-info fw-bold mb-1">หน้า 3 / หลัง 2</h6>
-                                <p class="text-muted small mb-0">เน้นหน้าหนา</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 rounded formation-card-option text-center" onclick="changeFormation('1-4', 'หน้า 1 / หลัง 4')">
-                                <h6 class="text-info fw-bold mb-1">หน้า 1 / หลัง 4</h6>
-                                <p class="text-muted small mb-0">ดาเมจหลังเต็มพิกัด</p>
-                            </div>
-                        </div>
-                        <div class="col-6">
-                            <div class="p-3 rounded formation-card-option text-center" onclick="changeFormation('4-1', 'หน้า 4 / หลัง 1')">
-                                <h6 class="text-info fw-bold mb-1">หน้า 4 / หลัง 1</h6>
-                                <p class="text-muted small mb-0">แทงค์หน้า 4 ตัว</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+            <!-- บรรทัดล่าง: ตัวหนังสือใหญ่ๆ แสดงการจับเวลาถอยหลัง -->
+            <div class="mt-2">
+                <div id="countdown" class="text-countdown">00:00:00</div>
             </div>
-        </div>
-    </div>
 
-    <!-- Modal เลือกตัวละคร -->
-    <div class="modal fade" id="selectHeroModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light border-secondary">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-warning">เลือกตัวละครลงตำแหน่ง</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="heroListContainer" class="row g-2">
-                        <!-- รายการฮีโร่ -->
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal เลือกสัตว์เลี้ยง -->
-    <div class="modal fade" id="selectPetModal" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content bg-dark text-light border-secondary">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title text-warning">เลือกสัตว์เลี้ยงประจำทีม</h5>
-                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div id="petListContainer" class="row g-2">
-                        <!-- รายการสัตว์เลี้ยง -->
-                    </div>
-                </div>
-            </div>
         </div>
     </div>
 
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- JS Library สำหรับยิงพลุ (Canvas Confetti) -->
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
     <script>
-        // ข้อมูลตัวละครจำลอง
-        const availableHeroes = [
-            { id: 1, name: "ยูภกอน", image: "https://i.pinimg.com/originals/a0/bf/df/a0bfdf887e50c451675beec0f7d5c9c1.png" },
-            { id: 2, name: "โดยอง", image: "https://i.pinimg.com/originals/a0/bf/df/a0bfdf887e50c451675beec0f7d5c9c1.png" },
-            { id: 3, name: "อีจูฮี", image: "https://i.pinimg.com/originals/a0/bf/df/a0bfdf887e50c451675beec0f7d5c9c1.png" }
-        ];
+        const countdownElement = document.getElementById('countdown');
+        let fireworksInterval = null;
 
-        // ข้อมูลสัตว์เลี้ยงจำลอง
-        const availablePets = [
-            { id: 101, name: "จิ้งจอกเพลิง", image: "https://i.pinimg.com/originals/a0/bf/df/a0bfdf887e50c451675beec0f7d5c9c1.png" },
-            { id: 102, name: "มังกรน้อย", image: "https://i.pinimg.com/originals/a0/bf/df/a0bfdf887e50c451675beec0f7d5c9c1.png" }
-        ];
+        // กำหนดเวลาเป้าหมายคือ 10:00:00 น. ของวันนี้แบบตรงเป๊ะ (ไม่ข้ามวัน)
+        const now = new Date();
+        const targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0).getTime();
 
-        let currentFormation = "2-3";
-        let teamData = { front: [null, null], back: [null, null, null] };
-        let selectedPet = null;
-        let activeTargetSlot = null;
+        // ฟังก์ชันจุดพลุฉลอง (1 ชุด)
+        function launchFireworks() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
 
-        const heroModal = new bootstrap.Modal(document.getElementById('selectHeroModal'));
-        const petModal = new bootstrap.Modal(document.getElementById('selectPetModal'));
-        const formationModalInstance = new bootstrap.Modal(document.getElementById('formationModal'));
-
-        // ฟังก์ชันเปลี่ยนแผน
-        function changeFormation(formKey, formText) {
-            currentFormation = formKey;
-            document.getElementById('currentFormText').innerText = formText;
-            formationModalInstance.hide();
-            renderBoard();
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = 40 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
         }
 
-        // วาดกระดาน
-        function renderBoard() {
-            const frontContainer = document.getElementById('frontSlots');
-            const backContainer = document.getElementById('backSlots');
-            
-            frontContainer.innerHTML = '';
-            backContainer.innerHTML = '';
-
-            let frontCount = 2, backCount = 3;
-            if (currentFormation === "3-2") { frontCount = 3; backCount = 2; }
-            if (currentFormation === "1-4") { frontCount = 1; backCount = 4; }
-            if (currentFormation === "4-1") { frontCount = 4; backCount = 1; }
-
-            teamData.front = Array(frontCount).fill(null);
-            teamData.back = Array(backCount).fill(null);
-
-            for (let i = 0; i < backCount; i++) {
-                backContainer.appendChild(createSlotElement('back', i));
-            }
-            for (let i = 0; i < frontCount; i++) {
-                frontContainer.appendChild(createSlotElement('front', i));
-            }
-
-            renderPetSlot();
+        function randomInRange(min, max) {
+            return Math.random() * (max - min) + min;
         }
 
-        function createSlotElement(line, index) {
-            const slot = document.createElement('div');
-            slot.className = 'slot-box';
-            
-            const hero = teamData[line][index];
-            if (hero) {
-                slot.classList.add('filled');
-                slot.innerHTML = `<img src="${hero.image}" class="img-fluid rounded" style="max-height: 85px;" alt="${hero.name}">`;
+        // เริ่มจุดพลุวนไปเรื่อยๆ แบบไม่มีวันหยุด
+        function startContinuousFireworks() {
+            if (!fireworksInterval) {
+                launchFireworks();
+                fireworksInterval = setInterval(launchFireworks, 4000); // ยิงชุดใหม่ทุกๆ 4 วินาที
+            }
+        }
+
+        // ระบบตรวจสอบเวลา
+        const timer = setInterval(function() {
+            const currentTime = new Date().getTime();
+            const difference = targetTime - currentTime;
+
+            if (difference <= 0) {
+                // เมื่อถึงเวลา 10:00 น. (หรือถ้าเปิดเว็บมาหลังจากเวลานี้แล้ว) ให้สิ้นสุดการนับทันที
+                clearInterval(timer);
+                countdownElement.innerText = "Launching Now !!";
+                countdownElement.className = "text-launching";
+                startContinuousFireworks(); // จุดพลุค้างไว้รัวๆ
             } else {
-                slot.innerHTML = `<span class="text-muted small">+ เลือก</span>`;
+                // คำนวณเวลาถอยหลังตามปกติ
+                const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
+                const seconds = Math.floor((difference % (1000 * 60)) / 1000);
+
+                const hDisplay = hours < 10 ? "0" + hours : hours;
+                const mDisplay = minutes < 10 ? "0" + minutes : minutes;
+                const sDisplay = seconds < 10 ? "0" + seconds : seconds;
+
+                countdownElement.innerText = `${hDisplay}:${mDisplay}:${sDisplay}`;
             }
-
-            slot.onclick = () => {
-                activeTargetSlot = { line, index };
-                openHeroSelector();
-            };
-
-            return slot;
-        }
-
-        function renderPetSlot() {
-            const petContainer = document.getElementById('petSlot');
-            if (selectedPet) {
-                petContainer.className = 'pet-slot border-solid bg-success bg-opacity-25';
-                petContainer.innerHTML = `<img src="${selectedPet.image}" class="img-fluid rounded" style="max-height: 95px;" alt="${selectedPet.name}">`;
-            } else {
-                petContainer.className = 'pet-slot';
-                petContainer.innerHTML = `<span class="text-muted small text-center">+ เลือก<br>สัตว์เลี้ยง</span>`;
-            }
-        }
-
-        function openHeroSelector() {
-            const container = document.getElementById('heroListContainer');
-            let html = `
-                <div class="col-12 mb-2">
-                    <button class="btn btn-outline-danger w-100 btn-sm" onclick="removeHeroFromSlot()">❌ เอาตัวละครออก</button>
-                </div>
-            `;
-            availableHeroes.forEach(hero => {
-                html += `
-                    <div class="col-4 text-center">
-                        <div class="card bg-secondary text-light p-2 border-0 shadow-sm" style="cursor: pointer;" onclick="selectHero(${hero.id})">
-                            <img src="${hero.image}" class="img-fluid rounded mb-1" style="max-height: 65px;">
-                            <span class="small fw-bold text-truncate">${hero.name}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-            heroModal.show();
-        }
-
-        function selectHero(heroId) {
-            const hero = availableHeroes.find(h => h.id === heroId);
-            if (activeTargetSlot) {
-                teamData[activeTargetSlot.line][activeTargetSlot.index] = hero;
-                renderBoard();
-                heroModal.hide();
-            }
-        }
-
-        function removeHeroFromSlot() {
-            if (activeTargetSlot) {
-                teamData[activeTargetSlot.line][activeTargetSlot.index] = null;
-                renderBoard();
-                heroModal.hide();
-            }
-        }
-
-        function openPetSelector() {
-            const container = document.getElementById('petListContainer');
-            let html = `
-                <div class="col-12 mb-2">
-                    <button class="btn btn-outline-danger w-100 btn-sm" onclick="removePet()">❌ ถอดสัตว์เลี้ยง</button>
-                </div>
-            `;
-            availablePets.forEach(pet => {
-                html += `
-                    <div class="col-6 text-center">
-                        <div class="card bg-secondary text-light p-2 border-0 shadow-sm" style="cursor: pointer;" onclick="selectPet(${pet.id})">
-                            <img src="${pet.image}" class="img-fluid rounded mb-1" style="max-height: 65px;">
-                            <span class="small fw-bold text-truncate">${pet.name}</span>
-                        </div>
-                    </div>
-                `;
-            });
-            container.innerHTML = html;
-            petModal.show();
-        }
-
-        function selectPet(petId) {
-            selectedPet = availablePets.find(p => p.id === petId);
-            renderPetSlot();
-            petModal.hide();
-        }
-
-        function removePet() {
-            selectedPet = null;
-            renderPetSlot();
-            petModal.hide();
-        }
-
-        // รันครั้งแรก
-        renderBoard();
+        }, 1000);
     </script>
 </body>
 </html>
