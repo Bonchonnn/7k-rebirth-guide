@@ -127,24 +127,15 @@
 
     <script>
         const countdownElement = document.getElementById('countdown');
+        let fireworksInterval = null;
 
-        // คำนวณเวลาเป้าหมาย 10:00 น.
-        function getTargetTime() {
-            const now = new Date();
-            let target = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0);
-            
-            // หากเวลาปัจจุบันเกิน 10:00 น. ไปแล้ว ให้เลื่อนเป้าหมายเป็น 10:00 น. ของวันพรุ่งนี้
-            if (now.getTime() > target.getTime()) {
-                target.setDate(target.getDate() + 1);
-            }
-            return target.getTime();
-        }
+        // กำหนดเวลาเป้าหมายคือ 10:00:00 น. ของวันนี้แบบตรงเป๊ะ (ไม่ข้ามวัน)
+        const now = new Date();
+        const targetTime = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 10, 0, 0).getTime();
 
-        const targetTime = getTargetTime();
-
-        // ฟังก์ชันจุดพลุฉลอง
+        // ฟังก์ชันจุดพลุฉลอง (1 ชุด)
         function launchFireworks() {
-            var duration = 5 * 1000;
+            var duration = 3 * 1000;
             var animationEnd = Date.now() + duration;
             var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 999 };
 
@@ -153,7 +144,7 @@
                 if (timeLeft <= 0) {
                     return clearInterval(interval);
                 }
-                var particleCount = 50 * (timeLeft / duration);
+                var particleCount = 40 * (timeLeft / duration);
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
                 confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
             }, 250);
@@ -163,16 +154,27 @@
             return Math.random() * (max - min) + min;
         }
 
-        // ฟังก์ชันอัปเดตตัวนับถอยหลัง
-        function updateTimer() {
+        // เริ่มจุดพลุวนไปเรื่อยๆ แบบไม่มีวันหยุด
+        function startContinuousFireworks() {
+            if (!fireworksInterval) {
+                launchFireworks();
+                fireworksInterval = setInterval(launchFireworks, 4000); // ยิงชุดใหม่ทุกๆ 4 วินาที
+            }
+        }
+
+        // ระบบตรวจสอบเวลา
+        const timer = setInterval(function() {
             const currentTime = new Date().getTime();
             const difference = targetTime - currentTime;
 
             if (difference <= 0) {
+                // เมื่อถึงเวลา 10:00 น. (หรือถ้าเปิดเว็บมาหลังจากเวลานี้แล้ว) ให้สิ้นสุดการนับทันที
+                clearInterval(timer);
                 countdownElement.innerText = "Launching Now !!";
                 countdownElement.className = "text-launching";
-                launchFireworks();
+                startContinuousFireworks(); // จุดพลุค้างไว้รัวๆ
             } else {
+                // คำนวณเวลาถอยหลังตามปกติ
                 const hours = Math.floor((difference % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
                 const minutes = Math.floor((difference % (1000 * 60 * 60)) / (1000 * 60));
                 const seconds = Math.floor((difference % (1000 * 60)) / 1000);
@@ -183,11 +185,7 @@
 
                 countdownElement.innerText = `${hDisplay}:${mDisplay}:${sDisplay}`;
             }
-        }
-
-        // เรียกทำงานทันที 1 ครั้งเพื่อไม่ให้ค้างที่ 00:00:00 แล้วรันทุกๆ 1 วินาที
-        updateTimer();
-        setInterval(updateTimer, 1000);
+        }, 1000);
     </script>
 </body>
 </html>
