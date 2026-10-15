@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <link rel="icon" type="image/png" href="images/favicon-7k-war.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guild War Overview - Seven Knights</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@500;700;800&family=Prompt:wght@400;600&display=swap" rel="stylesheet">
+    <!-- Supabase JS Client -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        body, html {
+            height: 100%;
+            margin: 0;
+            font-family: 'Prompt', sans-serif;
+            overflow-x: hidden;
+            background-color: #0f0803;
+        }
+
+        .bg-infinity-castle {
+            background: linear-gradient(rgba(15, 8, 3, 0.65), rgba(15, 8, 3, 0.75)),
+                        url('images/Bg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .blur-overlay {
+            min-height: 100vh;
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            padding-bottom: 50px;
+        }
+
+        h1, h2, h3, h5, h6 { font-family: 'Kanit', sans-serif; }
+
+        .btn-home {
+            font-family: 'Kanit', sans-serif; font-weight: 600;
+            background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+            border: 2px solid #6EE7B7; color: #fff; padding: 6px 18px; border-radius: 50px;
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-home:hover { color: #0f0803; background: #34D399; }
+
+        .btn-dashboard {
+            font-family: 'Kanit', sans-serif; font-weight: 600;
+            background: linear-gradient(135deg, #F59E0B 0%, #D97706 100%);
+            border: 2px solid #FFE066; color: #fff; padding: 6px 18px; border-radius: 50px;
+            box-shadow: 0 0 12px rgba(245, 158, 11, 0.5); text-decoration: none;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .btn-dashboard:hover { color: #0f0803; background: #FFE066; }
+
+        /* การ์ดบ้าน: พื้นหลังสีขาวความจาง 80% */
+        .house-card {
+            background: rgba(255, 255, 255, 0.85);
+            border: 2px solid #e5e7eb;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            color: #1f2937;
+            transition: all 0.3s ease;
+        }
+        .house-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(245, 158, 11, 0.3);
+            border-color: #f59e0b;
+        }
+
+        /* ช่องตัวละครจิ๋ว */
+        .view-hero-slot {
+            width: 60px; height: 75px; border: 2px solid #9ca3af;
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; background: rgba(243, 244, 246, 0.9);
+            overflow: hidden; position: relative;
+        }
+        .front-slot { border-color: #ef4444; }
+        .back-slot { border-color: #3b82f6; }
+
+        /* ช่องแหวนและสัตว์เลี้ยงจิ๋ว */
+        .view-ring-thumb {
+            width: 24px; height: 24px; border-radius: 50%;
+            border: 1px solid #f59e0b; background: #fef3c7;
+            object-fit: cover; position: absolute; bottom: 2px; right: 2px;
+        }
+        .view-pet-slot {
+            width: 60px; height: 75px; border: 2px solid #f59e0b;
+            border-radius: 8px; display: flex; align-items: center;
+            justify-content: center; background: #fef3c7; overflow: hidden;
+        }
+
+        .zone-label {
+            width: 26px; height: 26px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: 800; font-size: 0.75rem; font-family: 'Kanit', sans-serif; color: white;
+        }
+        .badge-front { background-color: #ef4444; }
+        .badge-back { background-color: #3b82f6; }
+    </style>
+</head>
+<body class="bg-infinity-castle text-light">
+
+    <div class="blur-overlay py-4">
+        <div class="container">
+            
+            <!-- ส่วนหัวเมนู -->
+            <div class="d-flex justify-content-between align-items-center mb-4 px-2">
+                <h3 class="text-warning fw-bold m-0" style="text-shadow: 0 0 12px rgba(245, 158, 11, 0.6);">
+                    🏰 ตารางแผนบ้านกิลด์วอ (Guild War Overview)
+                </h3>
+                <div class="d-flex gap-2 align-items-center">
+                    <a href="guildwar.html" class="btn-dashboard">⚙️ หน้าจัดบ้าน (Dashboard)</a>
+                    <a href="index.html" class="btn-home">🏠 หน้าแรก</a>
+                </div>
+            </div>
+
+            <!-- แสดงรายการบ้านทั้งหมด -->
+            <div id="housesContainer" class="row g-4">
+                <div class="col-12 text-center py-5">
+                    <div class="spinner-border text-warning" role="status"></div>
+                    <p class="mt-2 text-light opacity-75">กำลังโหลดข้อมูลแผนบ้านจากฐานข้อมูล...</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // ----------------------------------------------------------------
+        // ตั้งค่าเชื่อมต่อ Supabase (ใส่ URL และ Anon Key ของคุณที่นี่)
+        // ----------------------------------------------------------------
+        const SUPABASE_URL = 'YOUR_SUPABASE_URL_HERE';
+        const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY_HERE';
+        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        document.addEventListener("DOMContentLoaded", function() {
+            fetchGuildHouses();
+        });
+
+        async function fetchGuildHouses() {
+            const container = document.getElementById('housesContainer');
+            
+            const { data, error } = await supabaseClient
+                .from('guild_teams')
+                .select('*')
+                .order('created_at', { ascending: false });
+
+            if (error) {
+                container.innerHTML = `<div class="col-12 text-center py-5"><div class="alert alert-danger">❌ ไม่สามารถโหลดข้อมูลได้: ${error.message}</div></div>`;
+                return;
+            }
+
+            if (!data || data.length === 0) {
+                container.innerHTML = `
+                    <div class="col-12 text-center py-5">
+                        <div class="house-card p-5 d-inline-block text-dark">
+                            <h4 class="fw-bold mb-2">ยังไม่มีการจัดบ้านในระบบ</h4>
+                            <p class="text-muted mb-3">กดที่ปุ่ม "หน้าจัดบ้าน (Dashboard)" เพื่อเริ่มตั้งค่าทีมแรกได้เลยครับ</p>
+                            <a href="guildwar.html" class="btn btn-warning fw-bold px-4">ไปหน้าจัดบ้าน</a>
+                        </div>
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            data.forEach((house, index) => {
+                const selectedHeroes = typeof house.selected_heroes === 'string' ? JSON.parse(house.selected_heroes) : house.selected_heroes;
+                const pet = typeof house.pet === 'string' ? JSON.parse(house.pet) : house.pet;
+                
+                const frontChars = selectedHeroes ? selectedHeroes.front : [];
+                const backChars = selectedHeroes ? selectedHeroes.back : [];
+
+                html += `
+                    <div class="col-md-6">
+                        <div class="house-card p-3">
+                            <div class="d-flex justify-content-between align-items-center mb-3 pb-2 border-bottom">
+                                <h5 class="fw-bold m-0 text-dark">
+                                    🏠 ${house.house_name}
+                                </h5>
+                                <span class="badge bg-warning text-dark fw-bold px-2 py-1">แผน ${house.formation}</span>
+                            </div>
+
+                            <div class="row align-items-center g-2 mb-3">
+                                <div class="col-9">
+                                    <!-- แถวหลัง (Back) -->
+                                    <div class="mb-2 p-2 rounded bg-white border shadow-sm">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="zone-label badge-back">B</div>
+                                            <div class="d-flex gap-1 justify-content-center flex-grow-1">
+                                                ${renderHeroSlots(backChars, 'back-slot')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <!-- แถวหน้า (Front) -->
+                                    <div class="p-2 rounded bg-white border shadow-sm">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <div class="zone-label badge-front">F</div>
+                                            <div class="d-flex gap-1 justify-content-center flex-grow-1">
+                                                ${renderHeroSlots(frontChars, 'front-slot')}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- สัตว์เลี้ยง -->
+                                <div class="col-3 text-center">
+                                    <span class="d-block text-dark fw-bold mb-1" style="font-size: 0.7rem;">สัตว์เลี้ยง</span>
+                                    <div class="d-flex justify-content-center">
+                                        <div class="view-pet-slot shadow-sm" title="${pet ? pet.name : 'ไม่มี'}">
+                                            ${pet ? `<img src="${pet.image}" class="img-fluid" style="height:100%; object-fit:cover;">` : `<span class="text-muted small" style="font-size: 0.6rem;">ไม่มี</span>`}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ส่วนรายละเอียดเพิ่มเติม (ไอเทม/แหวน, สกิล Order, คำอธิบายทีม) -->
+                            <div class="bg-light p-2 rounded border small text-dark">
+                                ${renderHeroItemDetails(backChars, frontChars)}
+                                <div class="mt-2 pt-2 border-top">
+                                    <div><b>🔢 ลำดับสกิล:</b> <span class="text-danger fw-bold">${house.skill_order || 'ไม่ได้ระบุ'}</span></div>
+                                    <div><b>📝 หมายเหตุทีม:</b> ${house.team_description || 'ไม่มีคำอธิบายเพิ่มเติม'}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function renderHeroSlots(heroArray, slotClass) {
+            if (!heroArray || heroArray.length === 0) return '';
+            return heroArray.map(hero => {
+                if (hero) {
+                    return `
+                        <div class="view-hero-slot ${slotClass}" title="${hero.name}">
+                            <img src="${hero.image}" class="img-fluid" style="height:100%; object-fit:cover;" alt="${hero.name}">
+                            ${hero.ring ? `<img src="${hero.ring.image}" class="view-ring-thumb" title="${hero.ring.name}">` : ''}
+                        </div>
+                    `;
+                } else {
+                    return `
+                        <div class="view-hero-slot ${slotClass}">
+                            <span class="text-muted small" style="font-size: 0.6rem;">ว่าง</span>
+                        </div>
+                    `;
+                }
+            }).join('');
+        }
+
+        function renderHeroItemDetails(backChars, frontChars) {
+            const allActiveHeroes = [...backChars, ...frontChars].filter(h => h !== null);
+            if (allActiveHeroes.length === 0) return '<span class="text-muted">ยังไม่ได้เลือกตัวละครในทีม</span>';
+
+            let detailsHtml = '<div class="row g-1">';
+            allActiveHeroes.forEach((h, idx) => {
+                detailsHtml += `
+                    <div class="col-12">
+                        <span class="fw-bold text-primary">• ${h.name}:</span> 
+                        แหวน <span class="text-danger">${h.ring ? h.ring.name : 'ไม่ได้ใส่แหวน'}</span> 
+                        ${h.itemDesc ? `| <i>ไอเทม: ${h.itemDesc}</i>` : ''}
+                    </div>
+                `;
+            });
+            detailsHtml += '</div>';
+            return detailsHtml;
+        }
+    </script>
+</body>
+</html>
